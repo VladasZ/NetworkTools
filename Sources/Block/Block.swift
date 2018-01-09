@@ -184,4 +184,8 @@ public class Block {
     public init(dictionary: [String : Any]) {
         self.value = dictionary
     }
+    
+    public convenience init(error: String) {
+        self.init(dictionary: ["error" : error])
+    }
 }

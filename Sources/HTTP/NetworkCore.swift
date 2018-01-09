@@ -17,13 +17,16 @@ public class Network {
     
     internal static let session = URLSession(configuration: .default)
     
-    internal static func coreRequest(_ url: URLConvertible?,
+    internal static func coreRequest(_ url: URLConvertible,
                         method: HTTPMethod,
                         headers: Headers,
                         _ completion: @escaping CoreRequestCompletion) {
         
+        
+        let inURL = url
+        
         guard let url = (baseURL + url)?.url else {
-            completion(CoreNetworkResponse(.invalidURL))
+            completion(CoreNetworkResponse(requestURL: inURL, method:method, .invalidURL))
             return
             
         }
@@ -34,17 +37,31 @@ public class Network {
         
         session.dataTask(with: request) { data, response, error in
             
+            let statusCode = (response as? HTTPURLResponse)?.statusCode
+            
+            Log.info(statusCode)
+            
             if let error = error?.localizedDescription {
-                completion(CoreNetworkResponse(.networkError(error)))
+                completion(CoreNetworkResponse(requestURL: url,
+                                               method: method,
+                                               responseCode: statusCode,
+                                               .networkError(error)))
                 return
             }
             
             guard let data = data else {
-                completion(CoreNetworkResponse(.noData))
+                completion(CoreNetworkResponse(requestURL: url,
+                                               method: method,
+                                               responseCode: statusCode,
+                                               .noData))
                 return
             }
             
-            completion(CoreNetworkResponse(nil, Block(data:data)))
-        }.resume()
+            completion(CoreNetworkResponse(requestURL: url,
+                                           method: method,
+                                           responseCode: statusCode,
+                                           nil,
+                                           Block(data:data)))
+            }.resume()
     }
 }

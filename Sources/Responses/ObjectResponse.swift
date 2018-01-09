@@ -8,22 +8,16 @@
 
 import SwiftyTools
 
-public class ObjectResponse<Type> where Type: BlockConvertible {
+public class ObjectResponse<Type: BlockConvertible> : Response {
     
-    public var error: NetworkError?
     public var object: Type!
     
-    internal init(response: CoreNetworkResponse) {
-        self.error = response.error
-        if let block = response.block {
-            if (error == nil) {
-                object = try? Type(block: block)
-                if object == nil { error = .failedToCreateBlock }
-            }           
+    internal override init(response: CoreNetworkResponse) {
+        super.init(response: response)
+        
+        if (error == nil) {
+            object = try? Type(block: block)
+            if object == nil { error = .failedToCreateBlock }
         }
-    }
-    
-    init(error: String) {
-        self.error = .networkError(error)
     }
 }

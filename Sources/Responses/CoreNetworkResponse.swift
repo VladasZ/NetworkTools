@@ -10,12 +10,24 @@ import SwiftyTools
 
 class CoreNetworkResponse {
     
-    var error: NetworkError?
-    var block: Block?
+    public var requestURL:   URLConvertible
+    public var method:       HTTPMethod
+    public var responseCode: Int?
+    public var error:        NetworkError?
     
-    init(_ error: NetworkError? = nil, _ block: Block? = nil) {
+    public var block: Block
+    
+    init(requestURL:   URLConvertible,
+         method:       HTTPMethod,
+         responseCode: Int? = nil,
+         _ error:      NetworkError? = nil,
+         _ block:      Block? = nil) {
         
-        self.block = block
+        self.requestURL   = requestURL
+        self.method       = method
+        self.responseCode = responseCode
+        
+        self.block = block ?? Block.empty
         
         if let error = block?["error"]?.string {
             self.error = .networkError(error)
