@@ -12,7 +12,9 @@ public enum NetworkError : Error, CustomStringConvertible {
     
     case invalidURL
     case noData
+    case noParams
     case failedToCreateBlock
+    case notImplemented
     case networkError(String)
     
     public var localizedDescription: String {
@@ -23,7 +25,9 @@ public enum NetworkError : Error, CustomStringConvertible {
         switch self {
         case .invalidURL: return "Invalid URL."
         case .noData: return "No Data."
+        case .noParams: return "No Parameters."
         case .failedToCreateBlock: return "Failed to create Block object from Data."
+        case .notImplemented: return "Not Implemented."
         case .networkError(let error): return error
         }
     }

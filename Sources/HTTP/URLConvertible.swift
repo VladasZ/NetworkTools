@@ -26,5 +26,5 @@ extension String : URLConvertible {
 
 extension URL : URLConvertible {
     public var url: URL? { return self }
-    public var string: String { return self.path }
+    public var string: String { return "\(self)" }
 }

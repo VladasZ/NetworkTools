@@ -18,20 +18,31 @@ public class Network {
     internal static let session = URLSession(configuration: .default)
     
     internal static func coreRequest(_ url: URLConvertible,
-                        method: HTTPMethod,
-                        headers: Headers,
-                        _ completion: @escaping CoreRequestCompletion) {
+                                     method: HTTPMethod,
+                                     params: Parameters? = nil,
+                                     headers: Headers,
+                                     _ completion: @escaping CoreRequestCompletion) {
         
         
         let inURL = url
         
-        guard let url = (baseURL + url)?.url else {
-            completion(CoreNetworkResponse(requestURL: inURL, method:method, .invalidURL))
-            return
-            
+        guard var _url = (baseURL + url)?.url
+        else { completion(CoreNetworkResponse(requestURL: inURL, method:method, .invalidURL)); return }
+        
+        if let params = params {
+
+            if method == .get {
+                guard let urlWithParams = params.appendToUrl(_url)
+                else { completion(CoreNetworkResponse(requestURL: _url, method:method, .noParams)); return }
+                
+                _url = urlWithParams
+            }
+            else {
+                completion(CoreNetworkResponse(requestURL: _url, method:method, .notImplemented)); return
+            }
         }
         
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: _url)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
         
@@ -42,7 +53,7 @@ public class Network {
             Log.info(statusCode)
             
             if let error = error?.localizedDescription {
-                completion(CoreNetworkResponse(requestURL: url,
+                completion(CoreNetworkResponse(requestURL: _url,
                                                method: method,
                                                responseCode: statusCode,
                                                .networkError(error)))
@@ -50,14 +61,14 @@ public class Network {
             }
             
             guard let data = data else {
-                completion(CoreNetworkResponse(requestURL: url,
+                completion(CoreNetworkResponse(requestURL: _url,
                                                method: method,
                                                responseCode: statusCode,
                                                .noData))
                 return
             }
             
-            completion(CoreNetworkResponse(requestURL: url,
+            completion(CoreNetworkResponse(requestURL: _url,
                                            method: method,
                                            responseCode: statusCode,
                                            nil,

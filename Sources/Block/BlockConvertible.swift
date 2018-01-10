@@ -8,7 +8,7 @@
 
 import SwiftyTools
 
-public protocol BlockConvertible : class {
+public protocol BlockConvertible : Parameters {
     
     var block: Block { get }
     
