@@ -1,9 +1,9 @@
 //
 // ObjectResponse.swift
-//  yovape-merchant
+//  NetworkTools
 //
-//  Created by Vladas Zakrevskis on 10/13/17.
-//  Copyright © 2017 almet-systems. All rights reserved.
+//  Created by Vladas Zakrevskis on 1/9/18.
+//  Copyright © 2018 Vladas Zakrevskis. All rights reserved.
 //
 
 import SwiftyTools

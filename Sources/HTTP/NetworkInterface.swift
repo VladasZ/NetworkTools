@@ -9,63 +9,95 @@ import SwiftyTools
 
 internal typealias CoreRequestCompletion = (_ response: CoreNetworkResponse) -> ()
 
-public typealias ObjectRequestCompletion<T: BlockConvertible> = (_ response: ObjectResponse<T>) -> ()
-public typealias ArrayRequestCompletion<T: BlockConvertible>  = (_ response: ArrayResponse<T>) -> ()
+public typealias RequestCompletion                                 = (_ response: Response)               -> ()
+public typealias ObjectRequestCompletion<Result: BlockConvertible> = (_ response: ObjectResponse<Result>) -> ()
+public typealias ArrayRequestCompletion<Result: BlockConvertible>  = (_ response: ArrayResponse<Result>)  -> ()
 
-public typealias ArrayRequest<T: BlockConvertible> = (@escaping (ArrayResponse<T>) -> ()) -> ()
-public typealias RequestCompletion = (_ response: Response) -> ()
+public typealias RequestFunction
+    = (_ completion: @escaping RequestCompletion)               -> ()
+public typealias ObjectRequestFunction<Result: BlockConvertible>
+    = (_ completion: @escaping ObjectRequestCompletion<Result>) -> ()
+public typealias ArrayRequestFunction<Result: BlockConvertible>
+    = (_ completion: @escaping ArrayRequestCompletion<Result>)  -> ()
 
-public typealias RequestFunction                            = (_ completion: @escaping RequestCompletion) -> ()
-public typealias ObjectRequestFunction<T: BlockConvertible> = (_ completion: @escaping ObjectRequestCompletion<T>) -> ()
-public typealias ArrayRequestFunction<T: BlockConvertible>  = (_ completion: @escaping ArrayRequestCompletion<T>) -> ()
-
-public typealias ParamRequestFunction<T: Parameters> = (_ params: T, _ completion: @escaping RequestCompletion) -> ()
+public typealias ParamRequestFunction<Params: Parameters>
+    = (_ params: Params, _ completion: @escaping RequestCompletion)               -> ()
+public typealias ParamObjectRequestFuction<Params: Parameters, Result: BlockConvertible>
+    = (_ params: Params, _ completion: @escaping ObjectRequestCompletion<Result>) -> ()
+public typealias ParamArrayRequestFuction<Params: Parameters, Result: BlockConvertible>
+    = (_ params: Params, _ completion: @escaping ArrayRequestCompletion<Result>)  -> ()
 
 public typealias Headers = [String : String]
 
 public extension Network {
     
     public static var baseURL: URLConvertible?
-    public static var headers = Headers()
+    public static var defaultHeaders = Headers()
     
-    public static func request<T: Parameters>(_ url: URLConvertible,
-                                              params: T.Type,
-                                              method: HTTPMethod = .get
-        //headers: Headers = [:]
-        ) -> ParamRequestFunction<T> {
+    public static func request<Params: Parameters>(_ url: URLConvertible,
+                                                   method: HTTPMethod = .get,
+                                                   paramsType: Params.Type
+        ) -> ParamRequestFunction<Params>
+    {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: headers)
+            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders)
             { completion(Response(response: $0)) }
+        }
+    }
+    
+    public static func request<
+        Params: Parameters,
+        Result: BlockConvertible>(_ url: URLConvertible,
+                                  method: HTTPMethod = .get,
+                                  paramsType: Params.Type,
+                                  resultType: Result.Type) -> ParamObjectRequestFuction<Params, Result>
+    {
+        return { parameters, completion in
+            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders)
+            { completion(ObjectResponse<Result>(response: $0)) }
+        }
+    }
+    
+    public static func request<
+        Params: Parameters,
+        Result: BlockConvertible>(_ url: URLConvertible,
+                                  method: HTTPMethod = .get,
+                                  paramsType: Params.Type,
+                                  resultType: [Result].Type) -> ParamArrayRequestFuction<Params, Result>
+    {
+        return { parameters, completion in
+            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders)
+            { completion(ArrayResponse<Result>(response: $0)) }
         }
     }
     
     public static func request(_ url: URLConvertible,
                                method: HTTPMethod = .get
-                               //headers: Headers = [:]
-        ) -> RequestFunction {
+        ) -> RequestFunction
+    {
         return { completion in
-            Network.coreRequest(url, method: method, headers: headers)
+            Network.coreRequest(url, method: method, headers: defaultHeaders)
             { completion(Response(response: $0)) }
         }
     }
     
-    public static func request<T: BlockConvertible>(_ url: URLConvertible,
-                                  method: HTTPMethod = .post,
-                                  //headers: Headers = [:],
-                                  _ type: T.Type) -> ObjectRequestFunction<T> {
+    public static func request<Result: BlockConvertible>(_ url: URLConvertible,
+                                                         method: HTTPMethod = .post,
+                                                         resultType: Result.Type) -> ObjectRequestFunction<Result>
+    {
         return { completion in
-            Network.coreRequest(url, method: method, headers: headers)
-            { completion(ObjectResponse<T>(response: $0)) }
+            Network.coreRequest(url, method: method, headers: defaultHeaders)
+            { completion(ObjectResponse<Result>(response: $0)) }
         }
     }
     
-    public static func request<T: BlockConvertible>(_ url: URLConvertible,
-                                  method: HTTPMethod = .post,
-                                  //headers: Headers = [:],
-                                  _ type: [T].Type) -> ArrayRequestFunction<T>{
+    public static func request<Result: BlockConvertible>(_ url: URLConvertible,
+                                                         method: HTTPMethod = .post,
+                                                         resultType: [Result].Type) -> ArrayRequestFunction<Result>
+    {
         return { completion in
-            Network.coreRequest(url, method: method, headers: headers)
-            { completion(ArrayResponse<T>(response: $0)) }
+            Network.coreRequest(url, method: method, headers: defaultHeaders)
+            { completion(ArrayResponse<Result>(response: $0)) }
         }
     }
 }

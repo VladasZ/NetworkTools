@@ -27,7 +27,7 @@ public class Block {
     
     public var JSONString: String {
         if value == nil { return "No value" }
-        return (try? JSONSerialization.data(withJSONObject: value, options: []))?.JSONString ?? "No JSON data"
+        return (try? JSONSerialization.data(withJSONObject: value, options: []))?.JSONString.replacingOccurrences(of: "\\\"", with: "\"") ?? "No JSON data"
     }
     
     public var array:  [Block]? {

@@ -23,7 +23,6 @@ public class Network {
                                      headers: Headers,
                                      _ completion: @escaping CoreRequestCompletion) {
         
-        
         let inURL = url
         
         guard var _url = (baseURL + url)?.url
