@@ -82,7 +82,7 @@ public extension Network {
     }
     
     public static func request<Result: BlockConvertible>(_ url: URLConvertible,
-                                                         method: HTTPMethod = .post,
+                                                         method: HTTPMethod = .get,
                                                          resultType: Result.Type) -> ObjectRequestFunction<Result>
     {
         return { completion in
@@ -92,7 +92,7 @@ public extension Network {
     }
     
     public static func request<Result: BlockConvertible>(_ url: URLConvertible,
-                                                         method: HTTPMethod = .post,
+                                                         method: HTTPMethod = .get,
                                                          resultType: [Result].Type) -> ArrayRequestFunction<Result>
     {
         return { completion in
