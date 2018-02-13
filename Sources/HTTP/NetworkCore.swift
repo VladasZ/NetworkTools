@@ -46,32 +46,34 @@ public class Network {
         request.allHTTPHeaderFields = headers
         
         session.dataTask(with: request) { data, response, error in
-            
-            let statusCode = (response as? HTTPURLResponse)?.statusCode
-            
-            Log.info(statusCode)
-            
-            if let error = error?.localizedDescription {
+            DispatchQueue.main.async {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode
+                
+                Log.info(statusCode)
+                
+                if let error = error?.localizedDescription {
+                    completion(CoreNetworkResponse(requestURL: _url,
+                                                   method: method,
+                                                   responseCode: statusCode,
+                                                   .networkError(error)))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(CoreNetworkResponse(requestURL: _url,
+                                                   method: method,
+                                                   responseCode: statusCode,
+                                                   .noData))
+                    return
+                }
+                
                 completion(CoreNetworkResponse(requestURL: _url,
                                                method: method,
                                                responseCode: statusCode,
-                                               .networkError(error)))
-                return
+                                               nil,
+                                               Block(data:data)))
             }
             
-            guard let data = data else {
-                completion(CoreNetworkResponse(requestURL: _url,
-                                               method: method,
-                                               responseCode: statusCode,
-                                               .noData))
-                return
-            }
-            
-            completion(CoreNetworkResponse(requestURL: _url,
-                                           method: method,
-                                           responseCode: statusCode,
-                                           nil,
-                                           Block(data:data)))
             }.resume()
     }
 }
