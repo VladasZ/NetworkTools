@@ -22,6 +22,11 @@ public extension BlockConvertible {
     var data: Data?                 { return block.data       }
     var dictionary: [String : Any]? { return block.dictionary }
     
+    init(block: Block?) throws {
+        guard let block = block else { throw "No block" }
+        try self.init(block: block)
+    }
+    
     init(data: Data?) throws {
         
         guard let data = data else { throw FailedToInitializeBlockError() }
