@@ -10,20 +10,31 @@ import Foundation
 import SwiftyTools
 
 public protocol Parameters {
-    var dictionary: [String : Any]? { get }
+    var String:      String?        { get }
+    var Dictionary: [String : Any]? { get }
+}
+
+public extension Parameters {
+    var String:      String?        { return nil }
+    var Dictionary: [String : Any]? { return nil }
 }
 
 public extension Parameters {
     
     func appendToUrl(_ url: URLConvertible) -> URL? {
-        guard let dict = self.dictionary else { Log.error(); return url.url }
+        
+        if let string = self.String {
+            return (url.string + string).url
+        }
+        
+        guard let dict = self.Dictionary else { Log.error(); return url.url }
         guard let _url = url.url else { Log.error(); return url.url }
         guard var components = URLComponents(string: _url.string) else { Log.error(); return url.url }
         
         var items = [URLQueryItem]()
         
         for (key, value) in dict {
-            items.append(URLQueryItem(name: key, value: String(describing: value)))
+            items.append(URLQueryItem(name: key, value: Swift.String(describing: value)))
         }
         
         components.queryItems = items
@@ -33,7 +44,15 @@ public extension Parameters {
 }
 
 extension Dictionary : Parameters {
-    public var dictionary: [String : Any]? {
+    public var Dictionary: [String : Any]? {
         return self as? [String : Any]
     }
+}
+
+extension String : Parameters {
+    public var String: String? { return self }
+}
+
+extension Int : Parameters {
+    public var String: String? { return "\(self)" }
 }

@@ -9,7 +9,7 @@
 import SwiftyTools
 
 public enum HTTPMethod : String {
-    case get = "GET"
+    case get  = "GET"
     case post = "POST"
 }
 
