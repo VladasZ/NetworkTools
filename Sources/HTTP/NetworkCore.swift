@@ -49,7 +49,7 @@ public class Network {
             DispatchQueue.main.async {
                 let statusCode = (response as? HTTPURLResponse)?.statusCode
                 
-                Log.info(statusCode)
+                Log.info("\(statusCode ?? -1) \(_url)")
                 
                 if let error = error?.localizedDescription {
                     completion(CoreNetworkResponse(requestURL: _url,
