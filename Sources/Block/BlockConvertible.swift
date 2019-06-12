@@ -29,8 +29,8 @@ public extension BlockConvertible {
     
     init(data: Data?) throws {
         
-        guard let data = data else { throw FailedToInitializeBlockError() }
-        guard let block = Block(data: data) else { throw FailedToInitializeBlockError() }
+        guard let data = data else { throw "FailedToInitializeBlockError()" }
+        guard let block = Block(data: data) else { throw "FailedToInitializeBlockError()" }
         try self.init(block: block)
     }
 }
@@ -45,14 +45,14 @@ public extension Array where Element: BlockConvertible {
     
     init(data: Data?) throws {
         
-        guard let data = data else { throw FailedToInitializeBlockError() }
-        guard let block = Block(data: data) else { throw FailedToInitializeBlockError() }
+        guard let data = data else { throw "FailedToInitializeBlockError()" }
+        guard let block = Block(data: data) else { throw "FailedToInitializeBlockError()" }
         try self.init(block: block)
     }
     
     init(block: Block?) throws {
         
-        guard let block = block else { throw FailedToInitializeBlockError() }
+        guard let block = block else { throw "FailedToInitializeBlockError()" }
         
         let array = block.array ?? [block]
         var result = [Element]()
@@ -66,14 +66,14 @@ public extension Array where Element: BlockConvertible {
             }
         }
         
-        if array.count != 0 && result.count == 0 { throw FailedToInitializeBlockError() }
+        if array.count != 0 && result.count == 0 { throw "FailedToInitializeBlockError()" }
         
         self = result
     }
 }
 
 public extension Data {
-    public var JSONString: String {
+    var JSONString: String {
         return String(data: self, encoding: .utf8) ?? "not a JSON"
     }
 }

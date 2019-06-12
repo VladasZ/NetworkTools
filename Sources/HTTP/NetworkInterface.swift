@@ -31,10 +31,10 @@ public typealias Headers = [String : String]
 
 public extension Network {
     
-    public static var baseURL: URLConvertible?
-    public static var defaultHeaders = Headers()
+    static var baseURL: URLConvertible?
+    static var defaultHeaders = Headers()
     
-    public static func request<Params: Parameters>(_ url: URLConvertible,
+    static func request<Params: Parameters>(_ url: URLConvertible,
                                                    method: HTTPMethod = .get,
                                                    paramsType: Params.Type
         ) -> ParamRequestFunction<Params>
@@ -45,7 +45,7 @@ public extension Network {
         }
     }
     
-    public static func request<
+    static func request<
         Params: Parameters,
         Result: BlockConvertible>(_ url: URLConvertible,
                                   method: HTTPMethod = .get,
@@ -58,7 +58,7 @@ public extension Network {
         }
     }
     
-    public static func request<
+    static func request<
         Params: Parameters,
         Result: BlockConvertible>(_ url: URLConvertible,
                                   method: HTTPMethod = .get,
@@ -71,7 +71,7 @@ public extension Network {
         }
     }
     
-    public static func request(_ url: URLConvertible,
+    static func request(_ url: URLConvertible,
                                method: HTTPMethod = .get
         ) -> RequestFunction
     {
@@ -81,7 +81,7 @@ public extension Network {
         }
     }
     
-    public static func request<Result: BlockConvertible>(_ url: URLConvertible,
+    static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                          method: HTTPMethod = .get,
                                                          resultType: Result.Type) -> ObjectRequestFunction<Result>
     {
@@ -91,7 +91,7 @@ public extension Network {
         }
     }
     
-    public static func request<Result: BlockConvertible>(_ url: URLConvertible,
+    static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                          method: HTTPMethod = .get,
                                                          resultType: [Result].Type) -> ArrayRequestFunction<Result>
     {

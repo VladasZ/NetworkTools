@@ -8,6 +8,11 @@
 
 import SwiftyTools
 
+public func toJSON(_ value: Any) -> String {
+    guard let data = try? JSONSerialization.data(withJSONObject: value, options: []) else { return "No JSON data" }
+    return data.JSONString.replacingOccurrences(of: "\\\"", with: "\"")
+}
+
 public class Block {
     
     //MARK: - Static properties
@@ -26,8 +31,8 @@ public class Block {
     public var dictionary: [String : Any]? { return value as? [String : Any] }
     
     public var JSONString: String {
-        if value == nil { return "No value" }
-        return (try? JSONSerialization.data(withJSONObject: value, options: []))?.JSONString.replacingOccurrences(of: "\\\"", with: "\"") ?? "No JSON data"
+        guard let value = value else { return "No value" }
+        return toJSON(value)
     }
     
     public var array:  [Block]? {
@@ -49,40 +54,37 @@ public class Block {
             
             if self[key]?.value as? NSNull == nil { Log.error(key) }
             
-            throw FailedToExtractBlockError() }
+            throw "FailedToExtractBlockError()" }
         return value
     }
     
     public func extract<T>(_ key: String) throws -> T where T : BlockConvertible {
         
-        guard let block = self[key] else { Log.error(key); throw FailedToExtractBlockError() }
+        guard let block = self[key] else { Log.error(key); throw "FailedToExtractBlockError()" }
         return try T(block: block)
     }
     
     public func extract<T, T2>(_ key: String, _ convert: (T2) -> T) throws -> T  {
         
-        guard let value = self[key]?.value as? T2 else { Log.error(key); throw FailedToConvertBlockError() }
+        guard let value = self[key]?.value as? T2 else { Log.error(key); throw "FailedToConvertBlockError()" }
         return convert(value)
     }
     
     public func extract<T>(_ key: String) throws -> [T] where T : BlockSupportedType {
         
         guard let array = self[key]?.array else {
-            
-              
             Log.error(key);
-            
-            throw FailedToExtractBlockError() }
-        guard let result = (array.map { $0.value }) as? [T] else { Log.error(key); throw FailedToExtractBlockError() }
+            throw "FailedToExtractBlockError()" }
+        guard let result = (array.map { $0.value }) as? [T] else { Log.error(key); throw "FailedToExtractBlockError()" }
         return result
     }
     
     public func extract<T, T2>(_ key: String, _ convert: @escaping (T2) -> T) throws -> [T] where T : BlockSupportedType {
         
-        guard let array = self[key]?.array else { Log.error(key); throw FailedToExtractBlockError() }
+        guard let array = self[key]?.array else { Log.error(key); throw "FailedToExtractBlockError()" }
 
         return try array.map { (block) -> T in
-            guard let value = block.value as? T2 else { Log.error(key); throw FailedToExtractBlockError() }
+            guard let value = block.value as? T2 else { Log.error(key); throw "FailedToExtractBlockError()" }
             return convert(value)
         }
     }
@@ -91,7 +93,7 @@ public class Block {
         
         guard let data = self[key],
               data.array != nil
-        else { Log.error(key); throw FailedToExtractBlockError() }
+        else { Log.error(key); throw "FailedToExtractBlockError()" }
         
         return try [T](block: data)
     }

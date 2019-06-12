@@ -11,11 +11,13 @@ import SwiftyTools
 
 public protocol Parameters {
     var String:      String?        { get }
+    var BodyString:  String?        { get }
     var Dictionary: [String : Any]? { get }
 }
 
 public extension Parameters {
     var String:      String?        { return nil }
+    var BodyString:  String?        { return nil }
     var Dictionary: [String : Any]? { return nil }
 }
 
@@ -44,6 +46,13 @@ public extension Parameters {
 }
 
 extension Dictionary : Parameters {
+    public var BodyString: String? {
+        var result = ""
+        for (key, value) in self {
+            result += "\(key):\(value)\n"
+        }
+        return result
+    }
     public var Dictionary: [String : Any]? {
         return self as? [String : Any]
     }

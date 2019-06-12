@@ -20,8 +20,8 @@ class CoreNetworkResponse {
     init(requestURL:   URLConvertible,
          method:       HTTPMethod,
          responseCode: Int? = nil,
-         _ error:      NetworkError? = nil,
-         _ block:      Block? = nil) {
+         error:        NetworkError? = nil,
+         block:        Block? = nil) {
         
         self.requestURL   = requestURL
         self.method       = method
@@ -29,7 +29,8 @@ class CoreNetworkResponse {
         
         self.block = block ?? Block.empty
         
-        if let error = block?["error"]?.string {
+        if let error = block?["error"]?.string, error != "null" {
+            
             self.error = .networkError(error)
             return
         }

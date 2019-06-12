@@ -26,19 +26,12 @@ public class Network {
         let inURL = url
         
         guard var _url = (baseURL + url)?.url
-        else { completion(CoreNetworkResponse(requestURL: inURL, method:method, .invalidURL)); return }
+            else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
         
         if let params = params {
-
-            if method == .get {
-                guard let urlWithParams = params.appendToUrl(_url)
-                else { completion(CoreNetworkResponse(requestURL: _url, method:method, .noParams)); return }
-                
-                _url = urlWithParams
-            }
-            else {
-                completion(CoreNetworkResponse(requestURL: _url, method:method, .notImplemented)); return
-            }
+            guard let urlWithParams = params.appendToUrl(_url)
+                else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
+            _url = urlWithParams
         }
         
         var request = URLRequest(url: _url)
@@ -51,11 +44,11 @@ public class Network {
                 
                 Log.info("\(statusCode ?? -1) \(_url)")
                 
-                if let error = error?.localizedDescription {
+                if let error = error?.localizedDescription, error != "null" {
                     completion(CoreNetworkResponse(requestURL: _url,
                                                    method: method,
                                                    responseCode: statusCode,
-                                                   .networkError(error)))
+                                                   error: .networkError(error)))
                     return
                 }
                 
@@ -63,17 +56,20 @@ public class Network {
                     completion(CoreNetworkResponse(requestURL: _url,
                                                    method: method,
                                                    responseCode: statusCode,
-                                                   .noData))
+                                                   error: .noData))
                     return
                 }
                 
                 completion(CoreNetworkResponse(requestURL: _url,
                                                method: method,
                                                responseCode: statusCode,
-                                               nil,
-                                               Block(data:data)))
+                                               error: nil,
+                                               block: Block(data:data)))
             }
             
             }.resume()
     }
 }
+
+
+
