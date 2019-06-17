@@ -183,7 +183,7 @@ public class Block {
         value = json
     }
     
-    public init(dictionary: [String : Any]) {
+    public init(dictionary: [String : Any] = [String : Any]()) {
         self.value = dictionary
     }
     

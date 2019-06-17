@@ -10,15 +10,20 @@ import SwiftyTools
 
 public protocol BlockConvertible : Parameters {
     
-    var block: Block { get }
-    
     init(data: Data?) throws
     init(block: Block) throws
+    
+    func createBlock(block: inout Block)
 }
 
 public extension BlockConvertible {
     
-    var block: Block                { return Block.empty      }
+    var block: Block {
+        var block = Block()
+        createBlock(block: &block)
+        return block
+    }
+    
     var data: Data?                 { return block.data       }
     var dictionary: [String : Any]? { return block.dictionary }
     
