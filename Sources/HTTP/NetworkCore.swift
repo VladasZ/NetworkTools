@@ -15,6 +15,9 @@ public enum HTTPMethod : String {
 
 public class Network {
     
+    public static var sendUrlEncodedParameters = false
+    public static var logBodyString = false
+    
     internal static let session = URLSession(configuration: .default)
     
     internal static func coreRequest(_ url: URLConvertible,
@@ -28,15 +31,31 @@ public class Network {
         guard var _url = (baseURL + url)?.url
             else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
         
+        var body: Data?
+        
         if let params = params {
-            guard let urlWithParams = params.appendToUrl(_url)
-                else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
-            _url = urlWithParams
+            if sendUrlEncodedParameters {
+                guard let urlWithParams = params.appendToUrl(_url)
+                    else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
+                _url = urlWithParams
+            }
+            else {
+                
+                guard let utf8String = params.String?.utf8
+                    else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
+                
+                if logBodyString {
+                    Log.info(utf8String)
+                }
+                
+                body = Data(utf8String)
+            }
         }
         
         var request = URLRequest(url: _url)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
+        request.httpBody = body
         
         session.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -70,6 +89,7 @@ public class Network {
             }.resume()
     }
 }
+
 
 
 

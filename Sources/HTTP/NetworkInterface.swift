@@ -1,6 +1,6 @@
 //
 //  NetworkInterface.swift
-//  
+//
 //
 //  Created by Vladas Zakrevskis on 11/16/17.
 //
@@ -35,8 +35,8 @@ public extension Network {
     static var defaultHeaders = Headers()
     
     static func request<Params: Parameters>(_ url: URLConvertible,
-                                                   method: HTTPMethod = .get,
-                                                   paramsType: Params.Type
+                                            method: HTTPMethod = .get,
+                                            paramsType: Params.Type
         ) -> ParamRequestFunction<Params>
     {
         return { parameters, completion in
@@ -72,7 +72,7 @@ public extension Network {
     }
     
     static func request(_ url: URLConvertible,
-                               method: HTTPMethod = .get
+                        method: HTTPMethod = .get
         ) -> RequestFunction
     {
         return { completion in
@@ -82,8 +82,8 @@ public extension Network {
     }
     
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
-                                                         method: HTTPMethod = .get,
-                                                         resultType: Result.Type) -> ObjectRequestFunction<Result>
+                                                  method: HTTPMethod = .get,
+                                                  resultType: Result.Type) -> ObjectRequestFunction<Result>
     {
         return { completion in
             Network.coreRequest(url, method: method, headers: defaultHeaders)
@@ -92,8 +92,8 @@ public extension Network {
     }
     
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
-                                                         method: HTTPMethod = .get,
-                                                         resultType: [Result].Type) -> ArrayRequestFunction<Result>
+                                                  method: HTTPMethod = .get,
+                                                  resultType: [Result].Type) -> ArrayRequestFunction<Result>
     {
         return { completion in
             Network.coreRequest(url, method: method, headers: defaultHeaders)
@@ -101,4 +101,5 @@ public extension Network {
         }
     }
 }
+
 

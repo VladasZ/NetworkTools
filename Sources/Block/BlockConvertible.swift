@@ -24,6 +24,10 @@ public extension BlockConvertible {
         return block
     }
     
+    var String: String? {
+        return block.JSONString
+    }
+    
     var data: Data?                 { return block.data       }
     var dictionary: [String : Any]? { return block.dictionary }
     
