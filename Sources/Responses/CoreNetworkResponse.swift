@@ -30,11 +30,17 @@ class CoreNetworkResponse {
         self.block = block ?? Block.empty
         
         if let error = block?["error"]?.string, error != "null" {
-            
             self.error = .networkError(error)
             return
         }
         
         self.error = error
+        
+        if let responseCode = responseCode {
+            if self.error == nil && responseCode > 299 {
+                self.error = .networkError("\(responseCode)")
+            }
+        }
+    
     }
 }

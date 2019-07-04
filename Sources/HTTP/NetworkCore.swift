@@ -45,6 +45,7 @@ public class Network {
                     else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
                 
                 if logBodyString {
+                    Log.info("Sending body: ")
                     Log.info(utf8String)
                 }
                 
@@ -61,7 +62,7 @@ public class Network {
             DispatchQueue.main.async {
                 let statusCode = (response as? HTTPURLResponse)?.statusCode
                 
-                Log.info("\(statusCode ?? -1) \(_url)")
+                Log.info("\(statusCode ?? -1) \(method.rawValue) \(_url)")
                 
                 if let error = error?.localizedDescription, error != "null" {
                     completion(CoreNetworkResponse(requestURL: _url,
