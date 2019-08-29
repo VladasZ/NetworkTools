@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name           = 'NetworkTools'
-s.version        = '0.5.9'
+s.version        = '0.5.10'
 s.summary        = "Network tools kit to make your life easier."
 s.homepage       = "https://github.com/VladasZ/NetworkTools"
 s.author         = { 'Vladas Zakrevskis' => '146100@gmail.com' }
