@@ -18,6 +18,8 @@ public class Network {
     public static var sendUrlEncodedParameters = false
     public static var logBodyString = false
     
+    public static var customErrorHandle: ((Block?) -> String?)?
+    
     internal static let session = URLSession(configuration: .default)
     
     internal static func coreRequest(_ url: URLConvertible,

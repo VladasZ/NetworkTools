@@ -29,6 +29,13 @@ class CoreNetworkResponse {
         
         self.block = block ?? Block.empty
         
+        if let customHandle = Network.customErrorHandle {
+            if let error = customHandle(block) {
+                self.error = .networkError(error)
+                return
+            }
+        }
+        
         if let error = block?["error"]?.string, error != "null" {
             self.error = .networkError(error)
             return
