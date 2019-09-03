@@ -37,7 +37,12 @@ public class Network {
         var body: Data?
         
         if let params = params {
-            if sendUrlEncodedParameters {
+            if params.isInt {
+                guard let int_url = (_url.string + "/" + params.String)?.url
+                        else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
+                _url = int_url
+            }
+            else if sendUrlEncodedParameters {
                 guard let urlWithParams = params.appendToUrl(_url)
                     else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
                 _url = urlWithParams

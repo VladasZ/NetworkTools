@@ -10,11 +10,13 @@ import Foundation
 import SwiftyTools
 
 public protocol Parameters {
+    var isInt:       Bool           { get }
     var String:      String?        { get }
     var Dictionary: [String : Any]? { get }
 }
 
 public extension Parameters {
+    var isInt:       Bool           { return false }
     var String:      String?        { return nil }
     var Dictionary: [String : Any]? { return nil }
 }
@@ -59,5 +61,6 @@ extension String : Parameters {
 }
 
 extension Int : Parameters {
+    public var isInt: Bool { return true }
     public var String: String? { return "\(self)" }
 }
