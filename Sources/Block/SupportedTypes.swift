@@ -8,13 +8,30 @@
 
 import Foundation
 
-public protocol BlockSupportedType {
-    init()
-}
+public protocol BlockSupportedType { }
 
 extension Bool   : BlockSupportedType { }
 extension Int    : BlockSupportedType { }
 extension Double : BlockSupportedType { }
 extension String : BlockSupportedType { }
 
-extension Array : BlockSupportedType { }
+
+public protocol DefaultInitializable {
+    static var defaultValue: Self { get }
+}
+
+extension Bool   : DefaultInitializable {
+    public static var defaultValue: Bool   { return Bool()   }
+}
+
+extension Int    : DefaultInitializable {
+    public static var defaultValue: Int    { return Int()    }
+}
+
+extension Double : DefaultInitializable {
+    public static var defaultValue: Double { return Double() }
+}
+
+extension String : DefaultInitializable {
+    public static var defaultValue: String { return Swift.String() }
+}

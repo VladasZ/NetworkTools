@@ -114,7 +114,17 @@ public class Block {
         return try [T](block: data)
     }
     
-    public func tryExtract<T: BlockSupportedType>(_ key: String, _ def: T = T()) -> T {
+    public func tryExtract<T: DefaultInitializable>(_ key: String, _ def: T? = nil) -> T {
+        do {
+            return try extract(key)
+        }
+        catch {
+            Log.warning("Optional extract failed for key: \(key)")
+            return def ?? T.defaultValue
+        }
+    }
+    
+    public func tryExtract<T>(_ key: String, _ def: [T]) -> [T] {
         do {
             return try extract(key)
         }
