@@ -8,9 +8,13 @@
 
 import Foundation
 
-public protocol BlockSupportedType { }
+public protocol BlockSupportedType {
+    init()
+}
 
 extension Bool   : BlockSupportedType { }
 extension Int    : BlockSupportedType { }
 extension Double : BlockSupportedType { }
 extension String : BlockSupportedType { }
+
+extension Array : BlockSupportedType { }

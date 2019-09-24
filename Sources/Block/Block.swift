@@ -51,40 +51,56 @@ public class Block {
     public func extract<T>(_ key: String) throws -> T {
         
         guard let value: T = self[key]?.value as? T else {
-            
-            if self[key]?.value as? NSNull == nil { Log.error(key) }
-            
-            throw "FailedToExtractBlockError()" }
+            if self[key]?.value as? NSNull == nil {
+                Log.error(key)
+            }
+            throw "Failed to extract block for key: \(key)"
+        }
+        
         return value
     }
     
     public func extract<T>(_ key: String) throws -> T where T : BlockConvertible {
         
-        guard let block = self[key] else { Log.error(key); throw "FailedToExtractBlockError()" }
+        guard let block = self[key] else {
+            throw "Failed to extract block for key: \(key)"
+        }
+        
         return try T(block: block)
     }
     
     public func extract<T, T2>(_ key: String, _ convert: (T2) -> T) throws -> T  {
         
-        guard let value = self[key]?.value as? T2 else { Log.error(key); throw "FailedToConvertBlockError()" }
+        guard let value = self[key]?.value as? T2 else {
+            throw "Failed to extract block for key: \(key)"
+        }
+        
         return convert(value)
     }
     
     public func extract<T>(_ key: String) throws -> [T] where T : BlockSupportedType {
         
         guard let array = self[key]?.array else {
-            Log.error(key);
-            throw "FailedToExtractBlockError()" }
-        guard let result = (array.map { $0.value }) as? [T] else { Log.error(key); throw "FailedToExtractBlockError()" }
+            throw "Failed to extract block for key: \(key)"
+        }
+        
+        guard let result = (array.map { $0.value }) as? [T] else {
+            throw "Failed to extract block for key: \(key)"
+        }
+        
         return result
     }
     
     public func extract<T, T2>(_ key: String, _ convert: @escaping (T2) -> T) throws -> [T] where T : BlockSupportedType {
         
-        guard let array = self[key]?.array else { Log.error(key); throw "FailedToExtractBlockError()" }
-
+        guard let array = self[key]?.array else {
+            throw "Failed to extract block for key: \(key)"
+        }
+        
         return try array.map { (block) -> T in
-            guard let value = block.value as? T2 else { Log.error(key); throw "FailedToExtractBlockError()" }
+            guard let value = block.value as? T2 else {
+                throw "Failed to extract block for key: \(key)"
+            }
             return convert(value)
         }
     }
@@ -93,9 +109,19 @@ public class Block {
         
         guard let data = self[key],
               data.array != nil
-        else { Log.error(key); throw "FailedToExtractBlockError()" }
+        else { throw "Failed to extract block for key: \(key)" }
         
         return try [T](block: data)
+    }
+    
+    public func tryExtract<T: BlockSupportedType>(_ key: String, _ def: T = T()) -> T {
+        do {
+            return try extract(key)
+        }
+        catch {
+            Log.warning("Optional extract failed for key: \(key)")
+            return def
+        }
     }
     
     //MARK: - Serialization
