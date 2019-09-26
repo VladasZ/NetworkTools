@@ -24,10 +24,13 @@ public extension Parameters {
 public extension Parameters {
     
     func appendToUrl(_ url: URLConvertible) -> URL? {
-        
-        if let string = self.String {
-            return (url.string + string).url
-        }
+         
+//        if self.Dictionary == nil {
+//            if let string = self.String {
+//                return (url.string + string).url
+//            }
+//            Log.error(); return url.url
+//        }
         
         guard let dict = self.Dictionary else { Log.error(); return url.url }
         guard let _url = url.url else { Log.error(); return url.url }

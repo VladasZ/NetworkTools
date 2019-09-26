@@ -63,10 +63,11 @@ public extension Network {
         Result: BlockConvertible>(_ url: URLConvertible,
                                   method: HTTPMethod = .get,
                                   paramsType: Params.Type,
-                                  resultType: [Result].Type) -> ParamArrayRequestFuction<Params, Result>
+                                  resultType: [Result].Type,
+                                  urlEncodeParams: Bool = false) -> ParamArrayRequestFuction<Params, Result>
     {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders)
+            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
             { completion(ArrayResponse<Result>(response: $0)) }
         }
     }

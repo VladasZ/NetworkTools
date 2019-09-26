@@ -16,7 +16,6 @@ public enum HTTPMethod : String {
 
 public class Network {
     
-    public static var sendUrlEncodedParameters = false
     public static var logBodyString = false
     
     public static var customErrorHandle: ((Block?) -> String?)?
@@ -27,6 +26,7 @@ public class Network {
                                      method: HTTPMethod,
                                      params: Parameters? = nil,
                                      headers: Headers,
+                                     urlEncodeParams: Bool = false,
                                      _ completion: @escaping CoreRequestCompletion) {
         
         let inURL = url
@@ -42,7 +42,7 @@ public class Network {
                         else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
                 _url = int_url
             }
-            else if sendUrlEncodedParameters {
+            else if urlEncodeParams {
                 guard let urlWithParams = params.appendToUrl(_url)
                     else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
                 _url = urlWithParams
@@ -52,13 +52,14 @@ public class Network {
                 guard let utf8String = params.String?.utf8
                     else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
                 
-                if logBodyString {
-                    Log.info("Sending body: ")
-                    Log.info(utf8String)
-                }
-                
                 body = Data(utf8String)
             }
+        }
+        
+        if let body = body, logBodyString {
+            let bodyString = String(decoding: body, as: UTF8.self)
+            Log.info("Sending body: ")
+            Log.info(bodyString)
         }
         
         var request = URLRequest(url: _url)
