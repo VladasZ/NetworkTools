@@ -36,11 +36,12 @@ public extension Network {
     
     static func request<Params: Parameters>(_ url: URLConvertible,
                                             method: HTTPMethod = .get,
-                                            paramsType: Params.Type
+                                            paramsType: Params.Type,
+                                            urlEncodeParams: Bool = false
         ) -> ParamRequestFunction<Params>
     {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders)
+            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
             { completion(Response(response: $0)) }
         }
     }
@@ -50,10 +51,11 @@ public extension Network {
         Result: BlockConvertible>(_ url: URLConvertible,
                                   method: HTTPMethod = .get,
                                   paramsType: Params.Type,
-                                  resultType: Result.Type) -> ParamObjectRequestFuction<Params, Result>
+                                  resultType: Result.Type,
+                                  urlEncodeParams: Bool = false) -> ParamObjectRequestFuction<Params, Result>
     {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders)
+            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
             { completion(ObjectResponse<Result>(response: $0)) }
         }
     }
@@ -73,31 +75,34 @@ public extension Network {
     }
     
     static func request(_ url: URLConvertible,
-                        method: HTTPMethod = .get
+                        method: HTTPMethod = .get,
+                        urlEncodeParams: Bool = false
         ) -> RequestFunction
     {
         return { completion in
-            Network.coreRequest(url, method: method, headers: defaultHeaders)
+            Network.coreRequest(url, method: method, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
             { completion(Response(response: $0)) }
         }
     }
     
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                   method: HTTPMethod = .get,
-                                                  resultType: Result.Type) -> ObjectRequestFunction<Result>
+                                                  resultType: Result.Type,
+                                                  urlEncodeParams: Bool = false) -> ObjectRequestFunction<Result>
     {
         return { completion in
-            Network.coreRequest(url, method: method, headers: defaultHeaders)
+            Network.coreRequest(url, method: method, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
             { completion(ObjectResponse<Result>(response: $0)) }
         }
     }
     
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                   method: HTTPMethod = .get,
-                                                  resultType: [Result].Type) -> ArrayRequestFunction<Result>
+                                                  resultType: [Result].Type,
+                                                  urlEncodeParams: Bool = false) -> ArrayRequestFunction<Result>
     {
         return { completion in
-            Network.coreRequest(url, method: method, headers: defaultHeaders)
+            Network.coreRequest(url, method: method, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
             { completion(ArrayResponse<Result>(response: $0)) }
         }
     }
