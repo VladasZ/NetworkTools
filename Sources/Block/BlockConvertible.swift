@@ -48,7 +48,7 @@ public extension Array where Element: BlockConvertible {
     
     var block: Block {
         
-        Log.error()
+        LogError()
         return Block.empty//map { $0.block }
     }
     
@@ -71,7 +71,7 @@ public extension Array where Element: BlockConvertible {
             if let element = try? Element(block: $0) { result.append(element) }
             else {
                 
-                Log.error()
+                LogError()
             }
         }
         

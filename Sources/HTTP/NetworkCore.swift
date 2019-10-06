@@ -59,8 +59,8 @@ public class Network {
         
         if let body = body, logBodyString {
             let bodyString = String(decoding: body, as: UTF8.self)
-            Log.info("Sending body: ")
-            Log.info(bodyString)
+            Log("Sending body: ")
+            Log(bodyString)
         }
         
         var request = URLRequest(url: _url)
@@ -72,7 +72,7 @@ public class Network {
             DispatchQueue.main.async {
                 let statusCode = (response as? HTTPURLResponse)?.statusCode
                 
-                Log.info("\(statusCode ?? -1) \(method.rawValue) \(_url)")
+                Log("\(statusCode ?? -1) \(method.rawValue) \(_url)")
                 
                 if let error = error?.localizedDescription, error != "null" {
                     completion(CoreNetworkResponse(requestURL: _url,

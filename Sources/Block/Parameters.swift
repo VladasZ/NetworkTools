@@ -29,12 +29,12 @@ public extension Parameters {
 //            if let string = self.String {
 //                return (url.string + string).url
 //            }
-//            Log.error(); return url.url
+//            LogError(); return url.url
 //        }
         
-        guard let dict = self.Dictionary else { Log.error(); return url.url }
-        guard let _url = url.url else { Log.error(); return url.url }
-        guard var components = URLComponents(string: _url.string) else { Log.error(); return url.url }
+        guard let dict = self.Dictionary else { LogError(); return url.url }
+        guard let _url = url.url else { LogError(); return url.url }
+        guard var components = URLComponents(string: _url.string) else { LogError(); return url.url }
         
         var items = [URLQueryItem]()
         
