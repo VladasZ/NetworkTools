@@ -70,8 +70,15 @@ public extension Array where Element: BlockConvertible {
             
             if let element = try? Element(block: $0) { result.append(element) }
             else {
-                LogError(block.JSONString)
-                LogError($0.JSONString)
+                
+                if Network.logKeyExtractFailure {
+                    LogError($0.JSONString)
+                }
+                
+                if Network.verboseExtractLog {
+                    LogError(block.JSONString)
+                }
+                
             }
         }
         

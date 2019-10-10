@@ -20,7 +20,8 @@ public class Network {
     public static var logBodyString = false
     public static var logResponses = false
     public static var logKeyExtractFailure = false
-
+    public static var verboseExtractLog = false
+    
     public static var customErrorHandle: ((Block?) -> String?)?
     
     internal static let session = URLSession(configuration: .default)
