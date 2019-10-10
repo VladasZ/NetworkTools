@@ -48,10 +48,21 @@ public class Block {
     
     //MARK: - Extraction
     
+    private func riseFailure(_ message: String,
+                             _ file:String = #file,
+                             _ function:String = #function,
+                             _ line:Int = #line) throws -> Never
+    {
+        if Network.logKeyExtractFailure {
+            LogError(message, file, function, line)
+        }
+        throw message
+    }
+    
     public func extract<T>(_ key: String) throws -> T {
         
         guard let value: T = self[key]?.value as? T else {
-            throw "Failed to extract block for key: \(key)"
+            try riseFailure("Failed to extract block for key: \(key)")
         }
         
         return value
@@ -60,7 +71,7 @@ public class Block {
     public func extract<T>(_ key: String) throws -> T where T : BlockConvertible {
         
         guard let block = self[key] else {
-            throw "Failed to extract block for key: \(key)"
+            try riseFailure("Failed to extract block for key: \(key)")
         }
         
         return try T(block: block)
@@ -69,7 +80,7 @@ public class Block {
     public func extract<T, T2>(_ key: String, _ convert: (T2) -> T) throws -> T  {
         
         guard let value = self[key]?.value as? T2 else {
-            throw "Failed to extract block for key: \(key)"
+            try riseFailure("Failed to extract block for key: \(key)")
         }
         
         return convert(value)
@@ -78,11 +89,11 @@ public class Block {
     public func extract<T>(_ key: String) throws -> [T] where T : BlockSupportedType {
         
         guard let array = self[key]?.array else {
-            throw "Failed to extract block for key: \(key)"
+            try riseFailure("Failed to extract block for key: \(key)")
         }
         
         guard let result = (array.map { $0.value }) as? [T] else {
-            throw "Failed to extract block for key: \(key)"
+            try riseFailure("Failed to extract block for key: \(key)")
         }
         
         return result
@@ -91,12 +102,12 @@ public class Block {
     public func extract<T, T2>(_ key: String, _ convert: @escaping (T2) -> T) throws -> [T] where T : BlockSupportedType {
         
         guard let array = self[key]?.array else {
-            throw "Failed to extract block for key: \(key)"
+            try riseFailure("Failed to extract block for key: \(key)")
         }
         
         return try array.map { (block) -> T in
             guard let value = block.value as? T2 else {
-                throw "Failed to extract block for key: \(key)"
+                try riseFailure("Failed to extract block for key: \(key)")
             }
             return convert(value)
         }
@@ -104,9 +115,9 @@ public class Block {
     
     public func extract<T>(_ key: String) throws -> [T] where T : BlockConvertible {
         
-        guard let data = self[key],
-              data.array != nil
-        else { throw "Failed to extract block for key: \(key)" }
+        guard let data = self[key], data.array != nil else {
+            try riseFailure("Failed to extract block for key: \(key)")
+        }
         
         return try [T](block: data)
     }

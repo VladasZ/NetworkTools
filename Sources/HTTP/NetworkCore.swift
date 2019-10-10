@@ -18,7 +18,9 @@ public enum HTTPMethod : String {
 public class Network {
     
     public static var logBodyString = false
-    
+    public static var logResponses = false
+    public static var logKeyExtractFailure = false
+
     public static var customErrorHandle: ((Block?) -> String?)?
     
     internal static let session = URLSession(configuration: .default)
@@ -72,7 +74,9 @@ public class Network {
             DispatchQueue.main.async {
                 let statusCode = (response as? HTTPURLResponse)?.statusCode
                 
-                Log("\(statusCode ?? -1) \(method.rawValue) \(_url)")
+                if logResponses {
+                    Log("\(statusCode ?? -1) \(method.rawValue) \(_url)")
+                }
                 
                 if let error = error?.localizedDescription, error != "null" {
                     completion(CoreNetworkResponse(requestURL: _url,

@@ -70,8 +70,8 @@ public extension Array where Element: BlockConvertible {
             
             if let element = try? Element(block: $0) { result.append(element) }
             else {
-                
-                LogError()
+                LogError(block.JSONString)
+                LogError($0.JSONString)
             }
         }
         
