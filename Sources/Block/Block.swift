@@ -51,9 +51,6 @@ public class Block {
     public func extract<T>(_ key: String) throws -> T {
         
         guard let value: T = self[key]?.value as? T else {
-            if self[key]?.value as? NSNull == nil {
-                LogError(key)
-            }
             throw "Failed to extract block for key: \(key)"
         }
         
