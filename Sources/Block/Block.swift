@@ -220,9 +220,17 @@ public class Block {
     }
     
     public init?(data: Data?) {
-        guard let data = data else { return }
-        guard let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) else { return }
-        value = json
+        guard let data = data else { return nil }
+                
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+            value = json
+        }
+        else if let string = String(data: data, encoding: String.Encoding.utf8) {
+            value = string
+        }
+        else {
+            return nil
+        }
     }
     
     public init(dictionary: [String : Any] = [String : Any]()) {

@@ -95,7 +95,7 @@ public class Network {
                                                    error: .noData))
                     return
                 }
-                
+                                
                 completion(CoreNetworkResponse(requestURL: _url,
                                                method: method,
                                                responseCode: statusCode,
