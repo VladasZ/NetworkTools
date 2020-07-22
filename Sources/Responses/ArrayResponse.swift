@@ -6,7 +6,6 @@
 //  Copyright © 2017 almet-systems. All rights reserved.
 //
 
-import SwiftyTools
 
 public class ArrayResponse<Type: BlockConvertible> : Response {
     

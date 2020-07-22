@@ -6,7 +6,7 @@
 //  Copyright © 2017 VladasZ. All rights reserved.
 //
 
-import SwiftyTools
+import Foundation
 
 public func toJSON(_ value: Any) -> String {
     guard let data = try? JSONSerialization.data(withJSONObject: value, options: []) else { return "No JSON data" }

@@ -6,7 +6,8 @@
 //  Copyright © 2017 VladasZ. All rights reserved.
 //
 
-import SwiftyTools
+import Foundation
+
 
 public enum HTTPMethod : String {
     case get    = "GET"
@@ -43,7 +44,7 @@ public class Network {
         
         if let params = params {
             if params.isInt {
-                guard let int_url = (_url.string + "/" + params.String)?.url
+                guard let int_url = (_url.string + "/" + params.toString)?.url
                         else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
                 _url = int_url
             }
@@ -54,7 +55,7 @@ public class Network {
             }
             else {
                 
-                guard let utf8String = params.String?.utf8
+                guard let utf8String = params.toString?.utf8
                     else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
                 
                 body = Data(utf8String)

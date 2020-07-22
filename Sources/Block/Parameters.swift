@@ -7,17 +7,16 @@
 //
 
 import Foundation
-import SwiftyTools
 
 public protocol Parameters {
     var isInt:       Bool           { get }
-    var String:      String?        { get }
+    var toString:    String?        { get }
     var Dictionary: [String : Any]? { get }
 }
 
 public extension Parameters {
     var isInt:       Bool           { return false }
-    var String:      String?        { return nil }
+    var toString:    String?        { return nil }
     var Dictionary: [String : Any]? { return nil }
 }
 
@@ -50,7 +49,7 @@ public extension Parameters {
 
 extension Dictionary : Parameters {
     
-    public var String: String? {
+    public var toString: String? {
         return toJSON(self)
     }
     
@@ -60,10 +59,9 @@ extension Dictionary : Parameters {
 }
 
 extension String : Parameters {
-    public var String: String? { return self }
+    public var toString: String? { return self }
 }
 
 extension Int : Parameters {
     public var isInt: Bool { return true }
-    public var String: String? { return "\(self)" }
 }

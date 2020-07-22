@@ -6,7 +6,8 @@
 //  Copyright © 2017 VladasZ All rights reserved.
 //
 
-import SwiftyTools
+import Foundation
+
 
 public protocol BlockConvertible : Parameters {
     
@@ -24,7 +25,7 @@ public extension BlockConvertible {
         return block
     }
     
-    var String: String? {
+    var toString: String? {
         return block.JSONString
     }
     

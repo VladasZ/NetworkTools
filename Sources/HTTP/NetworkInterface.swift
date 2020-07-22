@@ -5,7 +5,6 @@
 //  Created by Vladas Zakrevskis on 11/16/17.
 //
 
-import SwiftyTools
 
 internal typealias CoreRequestCompletion = (_ response: CoreNetworkResponse) -> ()
 

@@ -6,7 +6,6 @@
 //  Copyright © 2018 Vladas Zakrevskis. All rights reserved.
 //
 
-import SwiftyTools
 
 public class ObjectResponse<Type: BlockConvertible> : Response {
     

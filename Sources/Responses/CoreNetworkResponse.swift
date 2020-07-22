@@ -6,7 +6,6 @@
 //  Copyright © 2017 Vladas Zakrevskis All rights reserved.
 //
 
-import SwiftyTools
 
 class CoreNetworkResponse {
     
