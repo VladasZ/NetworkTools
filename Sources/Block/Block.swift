@@ -17,25 +17,25 @@ public class Block {
     
     //MARK: - Static properties
     
-    public static var empty:     Block { return container }
-    public static var container: Block { return Block(value: [String : Any]()) }
+    public static var empty:     Block { container                      }
+    public static var container: Block { Block(value: [String : Any]()) }
     
     //MARK: - Properties
     
     public var value: Any!
     
-    public var string:     String?         { return value as? String }
-    public var int:        Int?            { return value as? Int    }
-    public var double:     Double?         { return value as? Double }
-    public var bool:       Bool?           { return value as? Bool   }
-    public var dictionary: [String : Any]? { return value as? [String : Any] }
+    public var toString:     String?         { value as? String }
+    public var toInt:        Int?            { value as? Int    }
+    public var toDouble:     Double?         { value as? Double }
+    public var toBool:       Bool?           { value as? Bool   }
+    public var toDictionary: [String : Any]? { value as? [String : Any] }
     
     public var JSONString: String {
         guard let value = value else { return "No value" }
         return toJSON(value)
     }
     
-    public var array:  [Block]? {
+    public var toArray: [Block]? {
         guard let array = value as? [Any] else { return nil }
         return array.map { Block(value: $0) }
     }
@@ -88,7 +88,7 @@ public class Block {
     
     public func extract<T>(_ key: String) throws -> [T] where T : BlockSupportedType {
         
-        guard let array = self[key]?.array else {
+        guard let array = self[key]?.toArray else {
             try riseFailure("Failed to extract block for key: \(key)")
         }
         
@@ -101,7 +101,7 @@ public class Block {
     
     public func extract<T, T2>(_ key: String, _ convert: @escaping (T2) -> T) throws -> [T] where T : BlockSupportedType {
         
-        guard let array = self[key]?.array else {
+        guard let array = self[key]?.toArray else {
             try riseFailure("Failed to extract block for key: \(key)")
         }
         
@@ -115,7 +115,7 @@ public class Block {
     
     public func extract<T>(_ key: String) throws -> [T] where T : BlockConvertible {
         
-        guard let data = self[key], data.array != nil else {
+        guard let data = self[key], data.toArray != nil else {
             try riseFailure("Failed to extract block for key: \(key)")
         }
         
@@ -142,17 +142,15 @@ public class Block {
     
     //MARK: - Serialization
     
-    var data: Data? {
-        
-        guard let dictionary = dictionary else { LogError(); return nil }
+    var toData: Data? {
+        guard let dictionary = toDictionary else { LogError(); return nil }
         return try? JSONSerialization.data(withJSONObject: dictionary, options: [])
     }
     
     public func append(_ key: String, _ value: BlockConvertible?) {
-        
-        guard let value = value else { return }
-        guard var dictionary = dictionary else { LogError(key); return }
-        guard let data = value.block.dictionary else { LogError(key); return }
+        guard let value      = value                    else {                return }
+        guard var dictionary = toDictionary             else { LogError(key); return }
+        guard let data       = value.block.toDictionary else { LogError(key); return }
         
         dictionary[key] = data
         self.value = dictionary
@@ -160,11 +158,11 @@ public class Block {
     
     public func append(_ key: String, _ value: [BlockConvertible]?) {
         
-        guard let value = value else { return }
-        guard var dictionary = dictionary else { LogError(key); return }
+        guard let value      = value        else {                return }
+        guard var dictionary = toDictionary else { LogError(key); return }
         
         dictionary[key] = value.map{ value -> [String : Any] in
-            if let dictionary = value.dictionary { return dictionary }
+            if let dictionary = value.toDictionary { return dictionary }
             else { LogError(); return ["error" : "error"] }
         }
         self.value = dictionary
@@ -173,17 +171,15 @@ public class Block {
     
     public func append(_ key: String, _ value: BlockSupportedType?, appendsNil: Bool = false) {
         
-        guard var dictionary = dictionary else { LogError(); return }
+        guard var dictionary = toDictionary else { LogError(); return }
         
         if appendsNil {
-            
-            if let value = value { dictionary[key] = value }
+            if let value = value { dictionary[key] = value    }
             else                 { dictionary[key] = NSNull() }
         }
         else {
-            
             guard let value = value else { return }
-            if let value = value as? String { if value.isEmpty { return } }
+            if let value    = value as? String { if value.isEmpty { return } }
             dictionary[key] = value
         }
         
@@ -191,18 +187,16 @@ public class Block {
     }
     
     public func append(_ key: String, _ value: [BlockSupportedType]?) {
-        
-        guard let value = value else { return }
-        guard var dictionary = dictionary else { LogError(); return }
+        guard let value      = value        else {             return }
+        guard var dictionary = toDictionary else { LogError(); return }
                 
         dictionary[key] = value
         self.value = dictionary
     }
     
     public func appendStringToArray(_ string: String) {
-        
         guard let stringData = Block(string: string) else { LogError(); return }
-        guard var array = self.array else { LogError(); return }
+        guard var array      = self.toArray          else { LogError(); return }
         array.append(stringData)
         value = array.map { $0.value }
     }

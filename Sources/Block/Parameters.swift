@@ -8,32 +8,25 @@
 
 import Foundation
 
+
 public protocol Parameters {
-    var isInt:       Bool           { get }
-    var toString:    String?        { get }
-    var Dictionary: [String : Any]? { get }
+    var isInt:         Bool           { get }
+    var toString:      String         { get }
+    var toDictionary: [String : Any]? { get }
 }
 
 public extension Parameters {
-    var isInt:       Bool           { return false }
-    var toString:    String?        { return nil }
-    var Dictionary: [String : Any]? { return nil }
+    var isInt:         Bool           { false }
+    var toDictionary: [String : Any]? { nil   }
 }
 
 public extension Parameters {
     
     func appendToUrl(_ url: URLConvertible) -> URL? {
-         
-//        if self.Dictionary == nil {
-//            if let string = self.String {
-//                return (url.string + string).url
-//            }
-//            LogError(); return url.url
-//        }
         
-        guard let dict = self.Dictionary else { LogError(); return url.url }
-        guard let _url = url.url else { LogError(); return url.url }
-        guard var components = URLComponents(string: _url.string) else { LogError(); return url.url }
+        guard let dict       = self.toDictionary                         else { LogError(); return url.toUrl }
+        guard let targetUrl  = url.toUrl                                 else { LogError(); return url.toUrl }
+        guard var components = URLComponents(string: targetUrl.toString) else { LogError(); return url.toUrl }
         
         var items = [URLQueryItem]()
         
@@ -48,20 +41,15 @@ public extension Parameters {
 }
 
 extension Dictionary : Parameters {
-    
-    public var toString: String? {
-        return toJSON(self)
-    }
-    
-    public var Dictionary: [String : Any]? {
-        return self as? [String : Any]
-    }
+    public var toString:      String         { toJSON(self)            }
+    public var toDictionary: [String : Any]? { self as? [String : Any] }
 }
 
 extension String : Parameters {
-    public var toString: String? { return self }
+    public var toString: String { self }
 }
 
 extension Int : Parameters {
-    public var isInt: Bool { return true }
+    public var toString: String { "\(self)" }
+    public var isInt:    Bool   {    true   }
 }

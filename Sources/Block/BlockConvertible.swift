@@ -25,12 +25,10 @@ public extension BlockConvertible {
         return block
     }
     
-    var toString: String? {
-        return block.JSONString
-    }
+    var toString: String { block.JSONString }
     
-    var data: Data?                 { return block.data       }
-    var dictionary: [String : Any]? { return block.dictionary }
+    var toData: Data?                 { block.toData       }
+    var toDictionary: [String : Any]? { block.toDictionary }
     
     init(block: Block?) throws {
         guard let block = block else { throw "No block" }
@@ -38,24 +36,22 @@ public extension BlockConvertible {
     }
     
     init(data: Data?) throws {
-        
-        guard let data = data else { throw "FailedToInitializeBlockError()" }
+        guard let data  = data              else { throw "FailedToInitializeBlockError()" }
         guard let block = Block(data: data) else { throw "FailedToInitializeBlockError()" }
         try self.init(block: block)
     }
+    
 }
 
 public extension Array where Element: BlockConvertible {
     
     var block: Block {
-        
         LogError()
-        return Block.empty//map { $0.block }
+        return Block.empty
     }
     
     init(data: Data?) throws {
-        
-        guard let data = data else { throw "FailedToInitializeBlockError()" }
+        guard let data  = data              else { throw "FailedToInitializeBlockError()" }
         guard let block = Block(data: data) else { throw "FailedToInitializeBlockError()" }
         try self.init(block: block)
     }
@@ -64,22 +60,18 @@ public extension Array where Element: BlockConvertible {
         
         guard let block = block else { throw "FailedToInitializeBlockError()" }
         
-        let array = block.array ?? [block]
+        let array = block.toArray ?? [block]
         var result = [Element]()
 
         array.forEach {
-            
             if let element = try? Element(block: $0) { result.append(element) }
             else {
-                
                 if Network.logKeyExtractFailure {
                     LogError($0.JSONString)
                 }
-                
                 if Network.verboseExtractLog {
                     LogError(block.JSONString)
                 }
-                
             }
         }
         

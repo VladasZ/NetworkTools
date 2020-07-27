@@ -36,29 +36,31 @@ public class Network {
                                      _ completion: @escaping CoreRequestCompletion) {
         
         let inURL = url
-        
-        guard var _url = (baseURL + url)?.url
-            else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
+
+        guard var targetUrl = (baseURL + url)?.toUrl else {
+            completion(CoreNetworkResponse(requestURL: inURL, method: method, error: .invalidURL))
+            return
+        }
         
         var body: Data?
         
         if let params = params {
             if params.isInt {
-                guard let int_url = (_url.string + "/" + params.toString)?.url
-                        else { completion(CoreNetworkResponse(requestURL: inURL, method:method, error: .invalidURL)); return }
-                _url = int_url
+                guard let urlAppendingInt = (targetUrl.toString + "/" + params.toString).toUrl else {
+                    completion(CoreNetworkResponse(requestURL: inURL, method: method, error: .invalidURL))
+                    return
+                }
+                targetUrl = urlAppendingInt
             }
             else if urlEncodeParams {
-                guard let urlWithParams = params.appendToUrl(_url)
-                    else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
-                _url = urlWithParams
+                guard let urlWithParams = params.appendToUrl(targetUrl) else {
+                    completion(CoreNetworkResponse(requestURL: targetUrl, method: method, error: .noParams))
+                    return
+                }
+                targetUrl = urlWithParams
             }
             else {
-                
-                guard let utf8String = params.toString?.utf8
-                    else { completion(CoreNetworkResponse(requestURL: _url, method:method, error: .noParams)); return }
-                
-                body = Data(utf8String)
+                body = Data(params.toString.utf8)
             }
         }
         
@@ -68,21 +70,22 @@ public class Network {
             Log(bodyString)
         }
         
-        var request = URLRequest(url: _url)
+        var request = URLRequest(url: targetUrl)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
         request.httpBody = body
         
         session.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
-                let statusCode = (response as? HTTPURLResponse)?.statusCode
+                
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
                 
                 if logResponses {
-                    Log("\(statusCode ?? -1) \(method.rawValue) \(_url)")
+                    Log("\(statusCode) \(method.rawValue) \(targetUrl)")
                 }
                 
                 if let error = error?.localizedDescription, error != "null" {
-                    completion(CoreNetworkResponse(requestURL: _url,
+                    completion(CoreNetworkResponse(requestURL: targetUrl,
                                                    method: method,
                                                    responseCode: statusCode,
                                                    error: .networkError(error)))
@@ -90,21 +93,21 @@ public class Network {
                 }
                 
                 guard let data = data else {
-                    completion(CoreNetworkResponse(requestURL: _url,
+                    completion(CoreNetworkResponse(requestURL: targetUrl,
                                                    method: method,
                                                    responseCode: statusCode,
                                                    error: .noData))
                     return
                 }
-                                
-                completion(CoreNetworkResponse(requestURL: _url,
+                
+                completion(CoreNetworkResponse(requestURL: targetUrl,
                                                method: method,
                                                responseCode: statusCode,
                                                error: nil,
                                                block: Block(data:data)))
             }
             
-            }.resume()
+        }.resume()
     }
 }
 

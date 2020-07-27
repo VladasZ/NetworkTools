@@ -35,7 +35,7 @@ class CoreNetworkResponse {
             }
         }
         
-        if let error = block?["error"]?.string, error != "null" {
+        if let error = block?["error"]?.toString, error != "null" {
             self.error = .networkError(error)
             return
         }

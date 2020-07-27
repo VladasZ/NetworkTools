@@ -8,23 +8,23 @@
 
 import Foundation
 
+
 public func +(left: URLConvertible?, right: URLConvertible?) -> URLConvertible? {
     if left != nil && right == nil { return left! }
     if left == nil && right != nil { return right! }
-    return left!.string.appending(right!.string)
+    return left!.toString.appending(right!.toString)
 }
 
 public protocol URLConvertible {
-    var url: URL? { get }
-    var string: String { get }
+    var toUrl:    URL?   { get }
+    var toString: String { get }
 }
 
 extension String : URLConvertible {
-    public var url: URL? { return URL(string: self) }
-    public var string: String { return self }
+    public var toUrl: URL? { URL(string: self) }
 }
 
 extension URL : URLConvertible {
-    public var url: URL? { return self }
-    public var string: String { return "\(self)" }
+    public var toUrl:    URL?   {    self   }
+    public var toString: String { "\(self)" }
 }
