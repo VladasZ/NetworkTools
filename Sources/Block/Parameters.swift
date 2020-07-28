@@ -62,6 +62,7 @@ extension Array : Parameters where Element: Numeric {
     public var isArray: Bool { true }
     public var toString: String { "\(self)" }
     public var toJsonString: String {
+        if isEmpty { return "[]" }
         var result = "["
         for val in self {
             result += "\(val), "
