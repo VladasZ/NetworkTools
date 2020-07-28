@@ -11,13 +11,17 @@ import Foundation
 
 public protocol Parameters {
     var isInt:         Bool           { get }
+    var isArray:       Bool           { get }
     var toString:      String         { get }
     var toDictionary: [String : Any]? { get }
+    var toJsonString:  String         { get }
 }
 
 public extension Parameters {
-    var isInt:         Bool           { false }
-    var toDictionary: [String : Any]? { nil   }
+    var isInt:         Bool           { false     }
+    var isArray:       Bool           { false     }
+    var toDictionary: [String : Any]? { nil       }
+    var toJsonString:  String         { "\(self)" }
 }
 
 public extension Parameters {
@@ -52,4 +56,16 @@ extension String : Parameters {
 extension Int : Parameters {
     public var toString: String { "\(self)" }
     public var isInt:    Bool   {    true   }
+}
+
+extension Array : Parameters where Element: Numeric {
+    public var isArray: Bool { true }
+    public var toString: String { "\(self)" }
+    public var toJsonString: String {
+        var result = "["
+        for val in self {
+            result += "\(val), "
+        }
+        return result.dropLast(2) + "]"
+    }
 }

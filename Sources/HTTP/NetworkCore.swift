@@ -52,6 +52,9 @@ public class Network {
                 }
                 targetUrl = urlAppendingInt
             }
+            else if params.isArray {
+                body = Data(params.toJsonString.utf8)
+            }
             else if urlEncodeParams {
                 guard let urlWithParams = params.appendToUrl(targetUrl) else {
                     completion(CoreNetworkResponse(requestURL: targetUrl, method: method, error: .noParams))

@@ -83,6 +83,6 @@ public extension Array where Element: BlockConvertible {
 
 public extension Data {
     var JSONString: String {
-        return String(data: self, encoding: .utf8) ?? "not a JSON"
+        String(data: self, encoding: .utf8) ?? "not a JSON"
     }
 }
