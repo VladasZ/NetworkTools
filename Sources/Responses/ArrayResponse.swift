@@ -14,7 +14,7 @@ public class ArrayResponse<Type: BlockConvertible> : Response {
     internal override init(response: CoreNetworkResponse) {
         super.init(response: response)
         if (error == nil) {
-            guard let array = try? [Type](block: block) else { error = .failedToCreateBlock; return }
+            guard let array = try? [Type](block: block) else { networkError = .failedToCreateBlock; return }
             self.array = array
         }
     }

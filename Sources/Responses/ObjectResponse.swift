@@ -16,7 +16,7 @@ public class ObjectResponse<Type: BlockConvertible> : Response {
         
         if (error == nil) {
             object = try? Type(block: block)
-            if object == nil { error = .failedToCreateBlock }
+            if object == nil { networkError = .failedToCreateBlock }
         }
     }
 }
