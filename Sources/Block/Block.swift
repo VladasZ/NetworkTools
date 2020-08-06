@@ -140,6 +140,10 @@ public class Block {
         }
     }
     
+    public func tryExtract<T: DefaultInitializable>(_ key: String, type: T.Type, _ def: T? = nil) -> T {
+        tryExtract(key, def)
+    }
+    
     //MARK: - Serialization
     
     var toData: Data? {

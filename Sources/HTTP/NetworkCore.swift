@@ -37,7 +37,7 @@ public class Network {
         
         let inURL = url
 
-        guard var targetUrl = (baseURL + url)?.toUrl else {
+        guard var targetUrl = (baseURL + url).toUrl else {
             completion(CoreNetworkResponse(requestURL: inURL, method: method, error: .invalidURL))
             return
         }
