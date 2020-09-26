@@ -35,3 +35,7 @@ extension Double : DefaultInitializable {
 extension String : DefaultInitializable {
     public static var defaultValue: String { return Swift.String() }
 }
+
+extension Dictionary : DefaultInitializable {
+    public static var defaultValue: Dictionary { return [:] }
+}
