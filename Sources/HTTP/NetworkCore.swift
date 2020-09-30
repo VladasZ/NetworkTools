@@ -19,10 +19,11 @@ public enum HTTPMethod : String {
 
 public class Network {
     
-    public static var logBodyString = false
-    public static var logResponses = false
+    public static var cacheRequests        = false
+    public static var logBodyString        = false
+    public static var logResponses         = false
     public static var logKeyExtractFailure = false
-    public static var verboseExtractLog = false
+    public static var verboseExtractLog    = false
     
     public static var customErrorHandle: ((Block?) -> String?)?
     
@@ -34,6 +35,19 @@ public class Network {
                                      headers: Headers,
                                      urlEncodeParams: Bool = false,
                                      _ completion: @escaping CoreRequestCompletion) {
+        
+        if cacheRequests {
+            
+            let request = Request(url: url.toString,
+                                  method: method.rawValue,
+                                  params: params?.toString,
+                                  headers: headers,
+                                  urlEncode: urlEncodeParams)
+            
+            Log(request)
+            
+        }
+        
         
         let inURL = url
 
