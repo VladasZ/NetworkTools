@@ -11,5 +11,12 @@ import Foundation
 
 class RequestCache {
     
+    let request: Request
+    let response: CoreNetworkResponse
+    
+    init(request: Request, response: CoreNetworkResponse) {
+        self.request  = request
+        self.response = response
+    }
     
 }

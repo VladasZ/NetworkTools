@@ -8,7 +8,15 @@
 
 import Foundation
 
-public enum NetworkError : Error, CustomStringConvertible {
+public enum NetworkError : Error, CustomStringConvertible, Codable {
+    
+    public init(from decoder: Decoder) throws {
+        self = NetworkError.networkError("Not an error from codable")
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+
+    }
     
     case invalidURL
     case noData

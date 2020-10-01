@@ -17,6 +17,8 @@ class Request {
     let headers:   Headers
     let urlEncode: Bool
     
+    private let time: TimeInterval
+    
     init(url:       String,
          method:    String,
          params:    String?,
@@ -27,6 +29,8 @@ class Request {
         self.params    = params.anyString
         self.headers   = headers
         self.urlEncode = urlEncode
+        
+        time = Date().timeIntervalSince1970
     }
     
 }
@@ -36,11 +40,12 @@ extension Request : CustomStringConvertible {
     var description: String {
         """
 
-        url:      \(url    )
-        method:   \(method )
-        params:   \(params )
-        headers:  \(headers)
-        urlEncode \(urlEncode)
+        url:       \(url      )
+        method:    \(method   )
+        params:    \(params   )
+        headers:   \(headers  )
+        urlEncode: \(urlEncode)
+        time:      \(time     )
         """
     }
     

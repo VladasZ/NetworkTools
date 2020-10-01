@@ -6,6 +6,13 @@
 //  Copyright © 2017 Vladas Zakrevskis All rights reserved.
 //
 
+fileprivate class Key {
+    static let requestURL   = "requestURL"
+    static let method       = "method"
+    static let responseCode = "responseCode"
+    static let error        = "error"
+    static let block        = "block"
+}
 
 class CoreNetworkResponse {
     

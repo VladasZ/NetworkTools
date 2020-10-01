@@ -15,7 +15,7 @@ public func +(left: URLConvertible?, right: URLConvertible?) -> URLConvertible {
     return left!.toString.appending(right!.toString)
 }
 
-public protocol URLConvertible {
+public protocol URLConvertible : Codable {
     var toUrl:    URL?   { get }
     var toString: String { get }
     var toFileURL: URL   { get }
