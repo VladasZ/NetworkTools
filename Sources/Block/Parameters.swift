@@ -70,3 +70,7 @@ extension Array : Parameters where Element: Numeric {
         return result.dropLast(2) + "]"
     }
 }
+
+extension Mappable : Parameters {
+    public var toJsonString:  String { toJsonString() }
+}

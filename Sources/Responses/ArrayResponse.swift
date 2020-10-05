@@ -7,15 +7,33 @@
 //
 
 
-public class ArrayResponse<Type: BlockConvertible> : Response {
+public class ArrayResponse<T> : Response {
+        
+    typealias ArrayType = [T]
     
-    public var array: [Type] = []
+    public var array: [T] = []
     
     internal override init(response: CoreNetworkResponse) {
         super.init(response: response)
         if (error == nil) {
-            guard let array = try? [Type](block: block) else { networkError = .failedToCreateBlock; return }
-            self.array = array
+            if let _ = T.self as? BlockConvertible.Type {
+                constructFromBlock(arc: T.self as! BlockConvertible.Type)
+            }
+        }
+    }
+    
+    private func constructFromBlock(arc: BlockConvertible.Type) {
+                
+        guard let blockArray = block.toArray else { networkError = .failedToCreateBlock; return }
+        
+        for objectBlock in blockArray {
+            if let object = try? arc.init(block: objectBlock) as? T {
+                array.append(object)
+            }
+            else {
+                LogError()
+            }
         }
     }
 }
+

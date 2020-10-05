@@ -15,6 +15,7 @@ public class Response {
     public var responseCode: Int?
     public var networkError: NetworkError?
     public var block:        Block
+    public var data:         Data?
     public var error:        String? { networkError?.localizedDescription }
     public var e:            String? { error } // ¯\_(ツ)_/¯
 
@@ -23,6 +24,8 @@ public class Response {
         method       = response.method
         responseCode = response.responseCode
         networkError = response.error
-        block        = response.block
+        block        = Block(data: response.data) ?? Block.empty
+        data =       response.data
     }
+    
 }

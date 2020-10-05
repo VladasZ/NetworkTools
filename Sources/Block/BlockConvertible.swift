@@ -9,7 +9,7 @@
 import Foundation
 
 
-public protocol BlockConvertible : Parameters {
+public protocol BlockConvertible : class, Parameters {
     
     init(data: Data?) throws
     init(block: Block) throws
@@ -79,6 +79,11 @@ public extension Array where Element: BlockConvertible {
         
         self = result
     }
+    
+    static func makeFrom(block: Block) -> Self? {
+        try? Self(block: block)
+    }
+    
 }
 
 public extension Data {

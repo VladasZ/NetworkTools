@@ -44,7 +44,7 @@ public class Network {
                                   headers: headers,
                                   urlEncode: urlEncodeParams)
             
-            Log(request)
+       //     Log(request)
             
         }
         
@@ -121,7 +121,7 @@ public class Network {
                                                method: method,
                                                responseCode: statusCode,
                                                error: nil,
-                                               block: Block(data:data)))
+                                               data: data))
             }
             
         }.resume()

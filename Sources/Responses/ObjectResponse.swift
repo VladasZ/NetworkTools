@@ -7,16 +7,29 @@
 //
 
 
-public class ObjectResponse<Type: BlockConvertible> : Response {
+public class ObjectResponse<T> : Response {
     
-    public var object: Type!
+    public var object: T!
     
     internal override init(response: CoreNetworkResponse) {
         super.init(response: response)
         
         if (error == nil) {
-            object = try? Type(block: block)
-            if object == nil { networkError = .failedToCreateBlock }
+            if let _ = T.self as? BlockConvertible.Type {
+                constructFromBlock(arc: T.self as! BlockConvertible.Type)
+            }
         }
     }
+    
+    
+    private func spes(arc: Mappable.Type) {
+                
+    }
+    
+    private func constructFromBlock(arc: BlockConvertible.Type) {
+        object = try? arc.init(block: block) as? T
+        if object == nil { networkError = .failedToCreateBlock }
+    }
+    
 }
+

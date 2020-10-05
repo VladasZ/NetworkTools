@@ -8,15 +8,15 @@
 
 internal typealias CoreRequestCompletion = (_ response: CoreNetworkResponse) -> ()
 
-public typealias RequestCompletion                                 = (_ response: Response)               -> ()
-public typealias ObjectRequestCompletion<Result: BlockConvertible> = (_ response: ObjectResponse<Result>) -> ()
-public typealias ArrayRequestCompletion<Result: BlockConvertible>  = (_ response: ArrayResponse<Result>)  -> ()
+public typealias RequestCompletion               = (_ response: Response)               -> ()
+public typealias ObjectRequestCompletion<Result> = (_ response: ObjectResponse<Result>) -> ()
+public typealias ArrayRequestCompletion<Result>  = (_ response: ArrayResponse<Result>)  -> ()
 
 public typealias RequestFunction
     = (_ completion: @escaping RequestCompletion)               -> ()
-public typealias ObjectRequestFunction<Result: BlockConvertible>
+public typealias ObjectRequestFunction<Result>
     = (_ completion: @escaping ObjectRequestCompletion<Result>) -> ()
-public typealias ArrayRequestFunction<Result: BlockConvertible>
+public typealias ArrayRequestFunction<Result>
     = (_ completion: @escaping ArrayRequestCompletion<Result>)  -> ()
 
 public typealias ParamRequestFunction<Params: Parameters>

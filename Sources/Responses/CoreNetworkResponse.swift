@@ -6,13 +6,7 @@
 //  Copyright © 2017 Vladas Zakrevskis All rights reserved.
 //
 
-fileprivate class Key {
-    static let requestURL   = "requestURL"
-    static let method       = "method"
-    static let responseCode = "responseCode"
-    static let error        = "error"
-    static let block        = "block"
-}
+import Foundation
 
 class CoreNetworkResponse {
     
@@ -21,19 +15,21 @@ class CoreNetworkResponse {
     public var responseCode: Int?
     public var error:        NetworkError?
     
-    public var block: Block
+    public var data: Data?
     
     init(requestURL:   URLConvertible,
          method:       HTTPMethod,
          responseCode: Int? = nil,
          error:        NetworkError? = nil,
-         block:        Block? = nil) {
+         data:         Data? = nil) {
         
         self.requestURL   = requestURL
         self.method       = method
         self.responseCode = responseCode
         
-        self.block = block ?? Block.empty
+        self.data = data
+        
+        let block = Block(data: data)
         
         if let customHandle = Network.customErrorHandle {
             if let error = customHandle(block) {
@@ -41,7 +37,7 @@ class CoreNetworkResponse {
                 return
             }
         }
-        
+                
         if let error = block?["error"]?.toString, error != "null" {
             self.error = .networkError(error)
             return
