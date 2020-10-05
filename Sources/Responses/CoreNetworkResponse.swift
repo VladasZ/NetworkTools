@@ -8,16 +8,17 @@
 
 import Foundation
 
-class CoreNetworkResponse {
+
+class CoreNetworkResponse : Mappable {
     
-    public var requestURL:   URLConvertible
+    public var requestURL:   String
     public var method:       HTTPMethod
     public var responseCode: Int?
     public var error:        NetworkError?
     
     public var data: Data?
     
-    init(requestURL:   URLConvertible,
+    init(requestURL:   String,
          method:       HTTPMethod,
          responseCode: Int? = nil,
          error:        NetworkError? = nil,
@@ -52,4 +53,10 @@ class CoreNetworkResponse {
         }
     
     }
+    
+    required init() {
+        requestURL = ""
+        method     = .get
+    }
+        
 }

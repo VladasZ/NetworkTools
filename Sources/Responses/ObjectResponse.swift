@@ -21,7 +21,6 @@ public class ObjectResponse<T> : Response {
         }
     }
     
-    
     private func spes(arc: Mappable.Type) {
                 
     }

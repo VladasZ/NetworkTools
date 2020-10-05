@@ -36,23 +36,23 @@ public class Network {
                                      urlEncodeParams: Bool = false,
                                      _ completion: @escaping CoreRequestCompletion) {
         
-        if cacheRequests {
-            
-            let request = Request(url: url.toString,
-                                  method: method.rawValue,
-                                  params: params?.toString,
-                                  headers: headers,
-                                  urlEncode: urlEncodeParams)
-            
-       //     Log(request)
-            
+        
+        let requestForCache = Request(url: url.toString,
+                                      method: method.rawValue,
+                                      params: params?.toString,
+                                      headers: headers,
+                                      urlEncode: urlEncodeParams)
+        
+        
+        if let cachedResponse = RequestCache.getFor(requestForCache) {
+            completion(cachedResponse)
+            return
         }
         
-        
         let inURL = url
-
+        
         guard var targetUrl = (baseURL + url).toUrl else {
-            completion(CoreNetworkResponse(requestURL: inURL, method: method, error: .invalidURL))
+            completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL))
             return
         }
         
@@ -61,7 +61,7 @@ public class Network {
         if let params = params {
             if params.isInt {
                 guard let urlAppendingInt = (targetUrl.toString + "/" + params.toString).toUrl else {
-                    completion(CoreNetworkResponse(requestURL: inURL, method: method, error: .invalidURL))
+                    completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL))
                     return
                 }
                 targetUrl = urlAppendingInt
@@ -71,7 +71,7 @@ public class Network {
             }
             else if urlEncodeParams {
                 guard let urlWithParams = params.appendToUrl(targetUrl) else {
-                    completion(CoreNetworkResponse(requestURL: targetUrl, method: method, error: .noParams))
+                    completion(CoreNetworkResponse(requestURL: targetUrl.toString, method: method, error: .noParams))
                     return
                 }
                 targetUrl = urlWithParams
@@ -102,7 +102,7 @@ public class Network {
                 }
                 
                 if let error = error?.localizedDescription, error != "null" {
-                    completion(CoreNetworkResponse(requestURL: targetUrl,
+                    completion(CoreNetworkResponse(requestURL: targetUrl.toString,
                                                    method: method,
                                                    responseCode: statusCode,
                                                    error: .networkError(error)))
@@ -110,24 +110,25 @@ public class Network {
                 }
                 
                 guard let data = data else {
-                    completion(CoreNetworkResponse(requestURL: targetUrl,
+                    completion(CoreNetworkResponse(requestURL: targetUrl.toString,
                                                    method: method,
                                                    responseCode: statusCode,
                                                    error: .noData))
                     return
                 }
                 
-                completion(CoreNetworkResponse(requestURL: targetUrl,
-                                               method: method,
-                                               responseCode: statusCode,
-                                               error: nil,
-                                               data: data))
+                
+                let response = CoreNetworkResponse(requestURL: targetUrl.toString,
+                                                   method: method,
+                                                   responseCode: statusCode,
+                                                   error: nil,
+                                                   data: data)
+                
+                RequestCache.store(request: requestForCache, response: response)
+                
+                completion(response)
             }
             
         }.resume()
     }
 }
-
-
-
-

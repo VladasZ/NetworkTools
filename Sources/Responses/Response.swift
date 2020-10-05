@@ -8,9 +8,10 @@
 
 import Foundation
 
+
 public class Response {
     
-    public var requestURL:   URLConvertible = ""
+    public var requestURL:   URLConvertible
     public var method:       HTTPMethod
     public var responseCode: Int?
     public var networkError: NetworkError?

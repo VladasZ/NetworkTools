@@ -9,14 +9,40 @@
 import Foundation
 
 
-class RequestCache {
+class RequestCache : Mappable {
+
+    private static var cache: [RequestCache] = []
     
     let request: Request
     let response: CoreNetworkResponse
     
-    init(request: Request, response: CoreNetworkResponse) {
+    private init(request: Request, response: CoreNetworkResponse) {
         self.request  = request
         self.response = response
+    }
+    
+    required init() {
+        request  = Request()
+        response = CoreNetworkResponse()
+    }
+    
+    static func store(request: Request, response: CoreNetworkResponse) {
+        cache.append(RequestCache(request: request, response: response))
+    }
+    
+    static func getFor(_ request: Request) -> CoreNetworkResponse? {
+        
+        for note in cache {
+            if note.request.tempHash == request.tempHash {
+               // LogWarning("From cache \(request.tempHash)")
+                return note.response
+            }
+        }
+        
+        LogWarning("Getting \(request.tempHash)")
+        
+        return nil
+        
     }
     
 }

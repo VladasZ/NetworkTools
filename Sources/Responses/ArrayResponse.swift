@@ -8,9 +8,7 @@
 
 
 public class ArrayResponse<T> : Response {
-        
-    typealias ArrayType = [T]
-    
+            
     public var array: [T] = []
     
     internal override init(response: CoreNetworkResponse) {

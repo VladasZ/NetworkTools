@@ -72,5 +72,6 @@ extension Array : Parameters where Element: Numeric {
 }
 
 extension Mappable : Parameters {
+    public var toString:      String { toJsonString() }
     public var toJsonString:  String { toJsonString() }
 }

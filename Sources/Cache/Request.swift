@@ -9,8 +9,8 @@
 import Foundation
 
 
-class Request {
-        
+class Request : Mappable {
+    
     let url:       String
     let method:    String
     let params:    String
@@ -18,7 +18,7 @@ class Request {
     let urlEncode: Bool
     
     private let time: TimeInterval
-    
+        
     init(url:       String,
          method:    String,
          params:    String?,
@@ -33,36 +33,17 @@ class Request {
         time = Date().timeIntervalSince1970
     }
     
-}
-
-extension Request : CustomStringConvertible {
-    
-    var description: String {
-        """
-
-        url:       \(url      )
-        method:    \(method   )
-        params:    \(params   )
-        headers:   \(headers  )
-        urlEncode: \(urlEncode)
-        time:      \(time     )
-        """
-    }
-    
-}
-
-extension Request : Hashable {
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(url)
-        hasher.combine(method)
-        hasher.combine(params)
-        hasher.combine(headers)
-        hasher.combine(urlEncode)
+    required init() {
+        url     = ""
+        method  = ""
+        params  = ""
+        headers = [:]
+        time    = 0
+        urlEncode = false
     }
 
-    static func == (lhs: Request, rhs: Request) -> Bool {
-        lhs.hashValue == rhs.hashValue
+    var tempHash: String {
+        url + method + params + " \(headers.hashValue)"
     }
-
+    
 }
