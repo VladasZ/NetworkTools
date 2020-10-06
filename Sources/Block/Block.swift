@@ -59,12 +59,12 @@ public class Block {
         throw message
     }
     
-    public func extract<T>(_ key: String) throws -> T {
-        
+    public func extract<T: DefaultInitializable>(_ key: String) throws -> T {
+
         guard let value: T = self[key]?.value as? T else {
             try riseFailure("Failed to extract block for key: \(key)")
         }
-        
+
         return value
     }
     
@@ -75,15 +75,6 @@ public class Block {
         }
         
         return try T(block: block)
-    }
-    
-    public func extract<T, T2>(_ key: String, _ convert: (T2) -> T) throws -> T  {
-        
-        guard let value = self[key]?.value as? T2 else {
-            try riseFailure("Failed to extract block for key: \(key)")
-        }
-        
-        return convert(value)
     }
     
     public func extract<T>(_ key: String) throws -> [T] where T : BlockSupportedType {
@@ -99,20 +90,6 @@ public class Block {
         return result
     }
     
-    public func extract<T, T2>(_ key: String, _ convert: @escaping (T2) -> T) throws -> [T] where T : BlockSupportedType {
-        
-        guard let array = self[key]?.toArray else {
-            try riseFailure("Failed to extract block for key: \(key)")
-        }
-        
-        return try array.map { (block) -> T in
-            guard let value = block.value as? T2 else {
-                try riseFailure("Failed to extract block for key: \(key)")
-            }
-            return convert(value)
-        }
-    }
-    
     public func extract<T>(_ key: String) throws -> [T] where T : BlockConvertible {
         
         guard let data = self[key], data.toArray != nil else {
@@ -122,25 +99,22 @@ public class Block {
         return try [T](block: data)
     }
     
-    public func tryExtract<T: DefaultInitializable>(_ key: String, _ def: T? = nil) -> T {
-        do {
-            return try extract(key)
-        }
-        catch {
-            return def ?? T.defaultValue
-        }
+    public func tryExtract<T: DefaultInitializable>(_ key: String, _ def: T = T.defaultValue) -> T {
+        do    { return try extract(key) }
+        catch { return             def  }
     }
     
-    public func tryExtract<T>(_ key: String, _ def: [T]) -> [T] {
-        do {
-            return try extract(key)
-        }
-        catch {
-            return def
-        }
+    public func tryExtract<T: BlockSupportedType>(_ key: String, _ def: [T] = []) -> [T] {
+        do    { return try extract(key) }
+        catch { return             def  }
     }
     
-    public func tryExtract<T: DefaultInitializable>(_ key: String, type: T.Type, _ def: T? = nil) -> T {
+    public func tryExtract<T: BlockConvertible>(_ key: String, _ def: [T] = []) -> [T] {
+        do    { return try extract(key) }
+        catch { return             def  }
+    }
+    
+    public func tryExtract<T: DefaultInitializable>(_ key: String, type: T.Type, _ def: T = T.defaultValue) -> T {
         tryExtract(key, def)
     }
     
