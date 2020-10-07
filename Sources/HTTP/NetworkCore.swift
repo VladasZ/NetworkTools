@@ -43,10 +43,11 @@ public class Network {
                                       headers: headers,
                                       urlEncode: urlEncodeParams)
         
-        
-        if let cachedResponse = RequestCache.getFor(requestForCache) {
-            completion(cachedResponse)
-            return
+        if cacheRequests {
+            if let cachedResponse = RequestCache.getFor(requestForCache) {
+                completion(cachedResponse)
+                return
+            }
         }
         
         let inURL = url
@@ -124,7 +125,9 @@ public class Network {
                                                    error: nil,
                                                    data: data)
                 
-                RequestCache.store(request: requestForCache, response: response)
+                if cacheRequests {
+                    RequestCache.store(request: requestForCache, response: response)
+                }
                 
                 completion(response)
             }
