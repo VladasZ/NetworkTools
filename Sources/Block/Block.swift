@@ -17,18 +17,18 @@ public class Block {
     
     //MARK: - Static properties
     
-    public static var empty:     Block { container                      }
-    public static var container: Block { Block(value: [String : Any]()) }
+    public static var empty:     Block { container                              }
+    public static var container: Block { Block(value: [String : AnyHashable]()) }
     
     //MARK: - Properties
     
     public var value: Any!
     
-    public var toString:     String?         { value as? String }
-    public var toInt:        Int?            { value as? Int    }
-    public var toDouble:     Double?         { value as? Double }
-    public var toBool:       Bool?           { value as? Bool   }
-    public var toDictionary: [String : Any]? { value as? [String : Any] }
+    public var toString:     String?                 { value as? String }
+    public var toInt:        Int?                    { value as? Int    }
+    public var toDouble:     Double?                 { value as? Double }
+    public var toBool:       Bool?                   { value as? Bool   }
+    public var toDictionary: [String : AnyHashable]? { value as? [String : AnyHashable] }
     
     public var JSONString: String {
         guard let value = value else { return "No value" }
@@ -41,7 +41,7 @@ public class Block {
     }
     
     public subscript (_ key: String) -> Block? {
-        guard let dict = value as? [String : Any] else { return nil }
+        guard let dict = value as? [String : AnyHashable] else { return nil }
         guard let value = dict[key] else { return nil }
         return Block(value: value)
     }
@@ -139,7 +139,7 @@ public class Block {
         guard let value      = value        else {                return }
         guard var dictionary = toDictionary else { LogError(key); return }
         
-        dictionary[key] = value.map{ value -> [String : Any] in
+        dictionary[key] = value.map { value -> [String : AnyHashable] in
             if let dictionary = value.toDictionary { return dictionary }
             else { LogError(); return ["error" : "error"] }
         }
@@ -147,7 +147,7 @@ public class Block {
         return
     }
     
-    public func append(_ key: String, _ value: BlockSupportedType?, appendsNil: Bool = false) {
+    public func append<T: BlockSupportedType>(_ key: String, _ value: T?, appendsNil: Bool = false) {
         
         guard var dictionary = toDictionary else { LogError(); return }
         
@@ -164,7 +164,7 @@ public class Block {
         self.value = dictionary
     }
     
-    public func append(_ key: String, _ value: [BlockSupportedType]?) {
+    public func append<T: BlockSupportedType>(_ key: String, _ value: [T]?) {
         guard let value      = value        else {             return }
         guard var dictionary = toDictionary else { LogError(); return }
                 
@@ -205,7 +205,7 @@ public class Block {
         }
     }
     
-    public init(dictionary: [String : Any] = [String : Any]()) {
+    public init(dictionary: [String : AnyHashable] = [String : AnyHashable]()) {
         self.value = dictionary
     }
     

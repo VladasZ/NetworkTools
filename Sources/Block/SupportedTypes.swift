@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol BlockSupportedType { }
+public protocol BlockSupportedType : Hashable { }
 
 extension Bool   : BlockSupportedType { }
 extension Int    : BlockSupportedType { }

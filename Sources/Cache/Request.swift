@@ -42,8 +42,13 @@ class Request : Mappable {
         urlEncode = false
     }
 
-    var tempHash: String {
-        url + method + params + " \(headers.hashValue)"
+    override var tempHash: Int {
+        var hasher = Hasher()
+        hasher.combine(url)
+        hasher.combine(method)
+        hasher.combine(params.tempHash)
+        hasher.combine(headers)
+        return hasher.finalize()
     }
     
 }

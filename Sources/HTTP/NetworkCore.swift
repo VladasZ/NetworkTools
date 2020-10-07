@@ -44,6 +44,9 @@ public class Network {
                                       urlEncode: urlEncodeParams)
         
         if cacheRequests {
+            
+           // Log(requestForCache.toJsonString())
+            
             if let cachedResponse = RequestCache.getFor(requestForCache) {
                 completion(cachedResponse)
                 return

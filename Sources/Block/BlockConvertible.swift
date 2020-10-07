@@ -19,6 +19,10 @@ public protocol BlockConvertible : class, Parameters {
 
 public extension BlockConvertible {
     
+    var tempHash: Int {
+        block.toDictionary.hashValue
+    }
+    
     var block: Block {
         var block = Block()
         createBlock(block: &block)
@@ -27,8 +31,8 @@ public extension BlockConvertible {
     
     var toString: String { block.JSONString }
     
-    var toData: Data?                 { block.toData       }
-    var toDictionary: [String : Any]? { block.toDictionary }
+    var toData: Data?                         { block.toData       }
+    var toDictionary: [String : AnyHashable]? { block.toDictionary }
     
     init(block: Block?) throws {
         guard let block = block else { throw "No block" }

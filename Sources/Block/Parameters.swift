@@ -10,18 +10,19 @@ import Foundation
 
 
 public protocol Parameters {
-    var isInt:         Bool           { get }
-    var isArray:       Bool           { get }
-    var toString:      String         { get }
-    var toDictionary: [String : Any]? { get }
-    var toJsonString:  String         { get }
+    var isInt:         Bool                   { get }
+    var isArray:       Bool                   { get }
+    var toString:      String                 { get }
+    var toDictionary: [String : AnyHashable]? { get }
+    var toJsonString:  String                 { get }
+    var tempHash:      Int                    { get }
 }
 
 public extension Parameters {
-    var isInt:         Bool           { false     }
-    var isArray:       Bool           { false     }
-    var toDictionary: [String : Any]? { nil       }
-    var toJsonString:  String         { "\(self)" }
+    var isInt:         Bool                   { false     }
+    var isArray:       Bool                   { false     }
+    var toDictionary: [String : AnyHashable]? { nil       }
+    var toJsonString:  String                 { "\(self)" }
 }
 
 public extension Parameters {
@@ -44,23 +45,27 @@ public extension Parameters {
     }
 }
 
-extension Dictionary : Parameters {
-    public var toString:      String         { toJSON(self)            }
-    public var toDictionary: [String : Any]? { self as? [String : Any] }
+extension Dictionary : Parameters where Value: Hashable {
+    public var toString:      String                 { toJSON(self)                    }
+    public var toDictionary: [String : AnyHashable]? { self as? [String : AnyHashable] }
+    public var tempHash: Int { hashValue }
 }
 
 extension String : Parameters {
     public var toString: String { self }
+    public var tempHash: Int { hashValue }
 }
 
 extension Int : Parameters {
     public var toString: String { "\(self)" }
     public var isInt:    Bool   {    true   }
+    public var tempHash: Int { hashValue }
 }
 
-extension Array : Parameters where Element: Numeric {
+extension Array : Parameters where Element: Numeric & Hashable {
     public var isArray: Bool { true }
     public var toString: String { "\(self)" }
+    public var tempHash: Int { hashValue }
     public var toJsonString: String {
         if isEmpty { return "[]" }
         var result = "["
@@ -74,4 +79,5 @@ extension Array : Parameters where Element: Numeric {
 extension Mappable : Parameters {
     public var toString:      String { toJsonString() }
     public var toJsonString:  String { toJsonString() }
+    public var tempHash:      Int    { hashValue      }
 }
