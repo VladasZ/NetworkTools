@@ -11,11 +11,11 @@ import Foundation
 
 class Request : Mappable {
     
-    let url:       String
-    let method:    String
-    let params:    String
-    let headers:   Headers
-    let urlEncode: Bool
+    var url:       String
+    var method:    String
+    var params:    String
+    var headers:   Headers
+    var urlEncode: Bool
     
     private let time: TimeInterval
         
@@ -50,5 +50,11 @@ class Request : Mappable {
         hasher.combine(headers)
         return hasher.finalize()
     }
+    
+}
+
+extension Request {
+    
+    var age: Double { Date().timeIntervalSince1970 - time }
     
 }

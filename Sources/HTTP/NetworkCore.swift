@@ -121,12 +121,11 @@ public class Network {
                     return
                 }
                 
-                
                 let response = CoreNetworkResponse(requestURL: targetUrl.toString,
                                                    method: method,
                                                    responseCode: statusCode,
                                                    error: nil,
-                                                   data: data)
+                                                   data: String(data: data, encoding: .utf8) ?? "")
                 
                 if cacheRequests {
                     RequestCache.store(request: requestForCache, response: response)

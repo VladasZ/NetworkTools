@@ -13,24 +13,24 @@ class CoreNetworkResponse : Mappable {
     
     public var requestURL:   String
     public var method:       HTTPMethod
-    public var responseCode: Int?
+    public var responseCode: Int
     public var error:        NetworkError?
     
-    public var data: Data?
+    public var data: String
     
     init(requestURL:   String,
          method:       HTTPMethod,
          responseCode: Int? = nil,
          error:        NetworkError? = nil,
-         data:         Data? = nil) {
+         data:         String = "") {
         
         self.requestURL   = requestURL
         self.method       = method
-        self.responseCode = responseCode
+        self.responseCode = responseCode ?? -1
         
         self.data = data
         
-        let block = Block(data: data)
+        let block = Block(string: data)
         
         if let customHandle = Network.customErrorHandle {
             if let error = customHandle(block) {
@@ -38,7 +38,7 @@ class CoreNetworkResponse : Mappable {
                 return
             }
         }
-                
+        
         if let error = block?["error"]?.toString, error != "null" {
             self.error = .networkError(error)
             return
@@ -51,12 +51,18 @@ class CoreNetworkResponse : Mappable {
                 self.error = .networkError("\(responseCode)")
             }
         }
-    
+        
     }
     
     required init() {
-        requestURL = ""
-        method     = .get
+        requestURL   = ""
+        method       = .get
+        responseCode = -1
+        data         = ""
     }
-        
+    
+    override public func propertyMapping() -> [(keyInObject: String?, keyInResource: String?)] {
+        [(keyInObject: "error", keyInResource: nil)]
+    }
+    
 }
