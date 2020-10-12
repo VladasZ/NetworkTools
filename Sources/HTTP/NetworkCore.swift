@@ -36,69 +36,65 @@ public class Network {
                                      urlEncodeParams: Bool = false,
                                      _ completion: @escaping CoreRequestCompletion) {
         
-        
-        let requestForCache = Request(url: url.toString,
-                                      method: method.rawValue,
-                                      params: params?.toString,
-                                      headers: headers,
-                                      urlEncode: urlEncodeParams)
-        
-        if cacheRequests {
+        async {
             
-           // Log(requestForCache.toJsonString())
+            let requestForCache = Request(url: url.toString,
+                                          method: method.rawValue,
+                                          params: params?.toString,
+                                          headers: headers,
+                                          urlEncode: urlEncodeParams)
             
-            if let cachedResponse = RequestCache.getFor(requestForCache) {
-                completion(cachedResponse)
+            if cacheRequests {
+                if let cachedResponse = RequestCache.getFor(requestForCache) {
+                    sync { completion(cachedResponse) }
+                    return
+                }
+            }
+            
+            let inURL = url
+            
+            guard var targetUrl = (baseURL + url).toUrl else {
+                sync { completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL)) }
                 return
             }
-        }
-        
-        let inURL = url
-        
-        guard var targetUrl = (baseURL + url).toUrl else {
-            completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL))
-            return
-        }
-        
-        var body: Data?
-        
-        if let params = params {
-            if params.isInt {
-                guard let urlAppendingInt = (targetUrl.toString + "/" + params.toString).toUrl else {
-                    completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL))
-                    return
+            
+            var body: Data?
+            
+            if let params = params {
+                if params.isInt {
+                    guard let urlAppendingInt = (targetUrl.toString + "/" + params.toString).toUrl else {
+                        sync { completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL)) }
+                        return
+                    }
+                    targetUrl = urlAppendingInt
                 }
-                targetUrl = urlAppendingInt
-            }
-            else if params.isArray {
-                body = Data(params.toJsonString.utf8)
-            }
-            else if urlEncodeParams {
-                guard let urlWithParams = params.appendToUrl(targetUrl) else {
-                    completion(CoreNetworkResponse(requestURL: targetUrl.toString, method: method, error: .noParams))
-                    return
+                else if params.isArray {
+                    body = Data(params.toJsonString.utf8)
                 }
-                targetUrl = urlWithParams
+                else if urlEncodeParams {
+                    guard let urlWithParams = params.appendToUrl(targetUrl) else {
+                        sync { completion(CoreNetworkResponse(requestURL: targetUrl.toString, method: method, error: .noParams)) }
+                        return
+                    }
+                    targetUrl = urlWithParams
+                }
+                else {
+                    body = Data(params.toString.utf8)
+                }
             }
-            else {
-                body = Data(params.toString.utf8)
+            
+            if let body = body, logBodyString {
+                let bodyString = String(decoding: body, as: UTF8.self)
+                Log("Sending body: ")
+                Log(bodyString)
             }
-        }
-        
-        if let body = body, logBodyString {
-            let bodyString = String(decoding: body, as: UTF8.self)
-            Log("Sending body: ")
-            Log(bodyString)
-        }
-        
-        var request = URLRequest(url: targetUrl)
-        request.httpMethod = method.rawValue
-        request.allHTTPHeaderFields = headers
-        request.httpBody = body
-        
-        session.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                
+            
+            var request = URLRequest(url: targetUrl)
+            request.httpMethod = method.rawValue
+            request.allHTTPHeaderFields = headers
+            request.httpBody = body
+            
+            session.dataTask(with: request) { data, response, error in
                 let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
                 
                 if logResponses {
@@ -106,18 +102,22 @@ public class Network {
                 }
                 
                 if let error = error?.localizedDescription, error != "null" {
-                    completion(CoreNetworkResponse(requestURL: targetUrl.toString,
-                                                   method: method,
-                                                   responseCode: statusCode,
-                                                   error: .networkError(error)))
+                    sync {
+                        completion(CoreNetworkResponse(requestURL: targetUrl.toString,
+                                                       method: method,
+                                                       responseCode: statusCode,
+                                                       error: .networkError(error)))
+                    }
                     return
                 }
                 
                 guard let data = data else {
-                    completion(CoreNetworkResponse(requestURL: targetUrl.toString,
-                                                   method: method,
-                                                   responseCode: statusCode,
-                                                   error: .noData))
+                    sync {
+                        completion(CoreNetworkResponse(requestURL: targetUrl.toString,
+                                                       method: method,
+                                                       responseCode: statusCode,
+                                                       error: .noData))
+                    }
                     return
                 }
                 
@@ -131,9 +131,10 @@ public class Network {
                     RequestCache.store(request: requestForCache, response: response)
                 }
                 
-                completion(response)
-            }
+                sync { completion(response) }
+                
+            }.resume()
             
-        }.resume()
+        }
     }
 }

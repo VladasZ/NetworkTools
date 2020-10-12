@@ -31,33 +31,28 @@ class RequestCache : Mappable {
     }
     
     static func store(request: Request, response: CoreNetworkResponse) {
+        objc_sync_enter(self)
         cache.append(RequestCache(request: request, response: response))
+        objc_sync_exit(self)
     }
     
     static func getFor(_ request: Request) -> CoreNetworkResponse? {
-        objc_sync_enter(self)
-                
-        Log("Connection ok: \(Connection.ok)")
-        
+                        
         guard let cache = (self.cache.first { $0.request.tempHash == request.tempHash }) else {
             Log("No cache")
-            objc_sync_exit(self)
             return nil
         }
-        
-        Log("cache exists")
-        
+                
         if cache.tooOld {
             if !Connection.ok {
-                objc_sync_exit(self)
                 return cache.response
             }
+            objc_sync_enter(self)
             self.cache.remove(cache)
             objc_sync_exit(self)
             return nil
         }
         
-        objc_sync_exit(self)
         return cache.response
         
 //        for note in cache {
@@ -98,6 +93,8 @@ extension RequestCache {
     }
     
     static func restore() {
+        if !Network.cacheRequests { return }
+        
         let json = cacheStorage
         if json.isEmpty {
             Log("No cache")
