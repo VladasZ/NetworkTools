@@ -33,6 +33,7 @@ public class Network {
                                      method: HTTPMethod,
                                      params: Parameters? = nil,
                                      headers: Headers,
+                                     cacheParams: CacheParams,
                                      urlEncodeParams: Bool = false,
                                      _ completion: @escaping CoreRequestCompletion) {
         
@@ -44,7 +45,7 @@ public class Network {
                                           headers: headers,
                                           urlEncode: urlEncodeParams)
             
-            if cacheRequests {
+            if cacheRequests && cacheParams.enabled {
                 if let cachedResponse = RequestCache.getFor(requestForCache) {
                     sync { completion(cachedResponse) }
                     return
@@ -127,8 +128,8 @@ public class Network {
                                                    error: nil,
                                                    data: String(data: data, encoding: .utf8) ?? "")
                 
-                if cacheRequests {
-                    RequestCache.store(request: requestForCache, response: response)
+                if cacheRequests && cacheParams.enabled {
+                    RequestCache.store(request: requestForCache, response: response, maxAge: cacheParams.maxAge)
                 }
                 
                 sync { completion(response) }

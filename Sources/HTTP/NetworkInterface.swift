@@ -36,11 +36,17 @@ public extension Network {
     static func request<Params: Parameters>(_ url: URLConvertible,
                                             method: HTTPMethod = .get,
                                             paramsType: Params.Type,
+                                            cacheParams: CacheParams = .enabled,
                                             urlEncodeParams: Bool = false
         ) -> ParamRequestFunction<Params>
     {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
+            Network.coreRequest(url,
+                                method: method,
+                                params: parameters,
+                                headers: defaultHeaders,
+                                cacheParams: cacheParams,
+                                urlEncodeParams: urlEncodeParams)
             { completion(Response(response: $0)) }
         }
     }
@@ -51,10 +57,16 @@ public extension Network {
                                   method: HTTPMethod = .get,
                                   paramsType: Params.Type,
                                   resultType: Result.Type,
+                                  cacheParams: CacheParams = .enabled,
                                   urlEncodeParams: Bool = false) -> ParamObjectRequestFuction<Params, Result>
     {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
+            Network.coreRequest(url,
+                                method: method,
+                                params: parameters,
+                                headers: defaultHeaders,
+                                cacheParams: cacheParams,
+                                urlEncodeParams: urlEncodeParams)
             { completion(ObjectResponse<Result>(response: $0)) }
         }
     }
@@ -65,21 +77,32 @@ public extension Network {
                                   method: HTTPMethod = .get,
                                   paramsType: Params.Type,
                                   resultType: [Result].Type,
+                                  cacheParams: CacheParams = .enabled,
                                   urlEncodeParams: Bool = false) -> ParamArrayRequestFuction<Params, Result>
     {
         return { parameters, completion in
-            Network.coreRequest(url, method: method, params: parameters, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
+            Network.coreRequest(url,
+                                method: method,
+                                params: parameters,
+                                headers: defaultHeaders,
+                                cacheParams: cacheParams,
+                                urlEncodeParams: urlEncodeParams)
             { completion(ArrayResponse<Result>(response: $0)) }
         }
     }
     
     static func request(_ url: URLConvertible,
                         method: HTTPMethod = .get,
+                        cacheParams: CacheParams = .enabled,
                         urlEncodeParams: Bool = false
         ) -> RequestFunction
     {
         return { completion in
-            Network.coreRequest(url, method: method, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
+            Network.coreRequest(url,
+                                method: method,
+                                headers: defaultHeaders,
+                                cacheParams: cacheParams,
+                                urlEncodeParams: urlEncodeParams)
             { completion(Response(response: $0)) }
         }
     }
@@ -87,10 +110,15 @@ public extension Network {
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                   method: HTTPMethod = .get,
                                                   resultType: Result.Type,
+                                                  cacheParams: CacheParams = .enabled,
                                                   urlEncodeParams: Bool = false) -> ObjectRequestFunction<Result>
     {
         return { completion in
-            Network.coreRequest(url, method: method, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
+            Network.coreRequest(url,
+                                method: method,
+                                headers: defaultHeaders,
+                                cacheParams: cacheParams,
+                                urlEncodeParams: urlEncodeParams)
             { completion(ObjectResponse<Result>(response: $0)) }
         }
     }
@@ -98,10 +126,15 @@ public extension Network {
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                   method: HTTPMethod = .get,
                                                   resultType: [Result].Type,
+                                                  cacheParams: CacheParams = .enabled,
                                                   urlEncodeParams: Bool = false) -> ArrayRequestFunction<Result>
     {
         return { completion in
-            Network.coreRequest(url, method: method, headers: defaultHeaders, urlEncodeParams: urlEncodeParams)
+            Network.coreRequest(url,
+                                method: method,
+                                headers: defaultHeaders,
+                                cacheParams: cacheParams,
+                                urlEncodeParams: urlEncodeParams)
             { completion(ArrayResponse<Result>(response: $0)) }
         }
     }
