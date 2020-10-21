@@ -12,8 +12,6 @@ public typealias RequestCompletion               = (_ response: Response)       
 public typealias ObjectRequestCompletion<Result> = (_ response: ObjectResponse<Result>) -> ()
 public typealias ArrayRequestCompletion<Result>  = (_ response: ArrayResponse<Result>)  -> ()
 
-public typealias RequestFunction
-    = (_ completion: @escaping RequestCompletion)               -> ()
 public typealias ObjectRequestFunction<Result>
     = (_ completion: @escaping ObjectRequestCompletion<Result>) -> ()
 public typealias ArrayRequestFunction<Result>
@@ -32,6 +30,23 @@ public extension Network {
     
     static var baseURL: URLConvertible?
     static var defaultHeaders = Headers()
+    
+    
+    static func request(_ url: URLConvertible,
+                        method: HTTPMethod = .get,
+                        cacheParams: CacheParams = .enabled,
+                        urlEncodeParams: Bool = false
+        ) -> RequestFunction
+    {
+        RequestFunction(cacheParams: cacheParams) { _cacheParams, completion in
+            Network.coreRequest(url,
+                                method: method,
+                                headers: defaultHeaders,
+                                cacheParams: _cacheParams,
+                                urlEncodeParams: urlEncodeParams)
+            { completion(Response(response: $0)) }
+        }
+    }
     
     static func request<Params: Parameters>(_ url: URLConvertible,
                                             method: HTTPMethod = .get,
@@ -88,22 +103,6 @@ public extension Network {
                                 cacheParams: cacheParams,
                                 urlEncodeParams: urlEncodeParams)
             { completion(ArrayResponse<Result>(response: $0)) }
-        }
-    }
-    
-    static func request(_ url: URLConvertible,
-                        method: HTTPMethod = .get,
-                        cacheParams: CacheParams = .enabled,
-                        urlEncodeParams: Bool = false
-        ) -> RequestFunction
-    {
-        return { completion in
-            Network.coreRequest(url,
-                                method: method,
-                                headers: defaultHeaders,
-                                cacheParams: cacheParams,
-                                urlEncodeParams: urlEncodeParams)
-            { completion(Response(response: $0)) }
         }
     }
     
