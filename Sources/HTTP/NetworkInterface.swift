@@ -34,7 +34,7 @@ public extension Network {
     
     static func request(_ url: URLConvertible,
                         method: HTTPMethod = .get,
-                        cacheParams: CacheParams = .enabled,
+                        cacheParams: CacheParams = .default,
                         urlEncodeParams: Bool = false
         ) -> RequestFunction
     {
@@ -51,7 +51,7 @@ public extension Network {
     static func request<Params: Parameters>(_ url: URLConvertible,
                                             method: HTTPMethod = .get,
                                             paramsType: Params.Type,
-                                            cacheParams: CacheParams = .enabled,
+                                            cacheParams: CacheParams = .default,
                                             urlEncodeParams: Bool = false
         ) -> ParamRequestFunction<Params>
     {
@@ -72,7 +72,7 @@ public extension Network {
                                   method: HTTPMethod = .get,
                                   paramsType: Params.Type,
                                   resultType: Result.Type,
-                                  cacheParams: CacheParams = .enabled,
+                                  cacheParams: CacheParams = .default,
                                   urlEncodeParams: Bool = false) -> ParamObjectRequestFuction<Params, Result>
     {
         return { parameters, completion in
@@ -92,7 +92,7 @@ public extension Network {
                                   method: HTTPMethod = .get,
                                   paramsType: Params.Type,
                                   resultType: [Result].Type,
-                                  cacheParams: CacheParams = .enabled,
+                                  cacheParams: CacheParams = .default,
                                   urlEncodeParams: Bool = false) -> ParamArrayRequestFuction<Params, Result>
     {
         return { parameters, completion in
@@ -109,7 +109,7 @@ public extension Network {
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                   method: HTTPMethod = .get,
                                                   resultType: Result.Type,
-                                                  cacheParams: CacheParams = .enabled,
+                                                  cacheParams: CacheParams = .default,
                                                   urlEncodeParams: Bool = false) -> ObjectRequestFunction<Result>
     {
         return { completion in
@@ -125,7 +125,7 @@ public extension Network {
     static func request<Result: BlockConvertible>(_ url: URLConvertible,
                                                   method: HTTPMethod = .get,
                                                   resultType: [Result].Type,
-                                                  cacheParams: CacheParams = .enabled,
+                                                  cacheParams: CacheParams = .default,
                                                   urlEncodeParams: Bool = false) -> ArrayRequestFunction<Result>
     {
         return { completion in

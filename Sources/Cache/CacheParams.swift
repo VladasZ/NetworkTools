@@ -18,9 +18,13 @@ public class CacheParams {
         self.enabled = enabled
         self.maxAge  = maxAge
     }
-     
+
+
     public static let enabled  = CacheParams()
     public static let disabled = CacheParams(enabled: false)
+
+    public static let `default`  = CacheParams.disabled
+
 
     public static func maxAge(_ age: Double) -> CacheParams {
         CacheParams(maxAge: age)
