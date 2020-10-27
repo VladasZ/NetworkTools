@@ -1,5 +1,5 @@
 //
-//  Request.swift
+//  RequestInfo.swift
 //  Actors Pocket Guide
 //
 //  Created by Vladas Zakrevskis on 10/1/20.
@@ -9,7 +9,7 @@
 import Foundation
 
 
-class Request : Mappable {
+class RequestInfo: Mappable {
     
     var url:       String
     var method:    String
@@ -57,7 +57,7 @@ class Request : Mappable {
     
 }
 
-extension Request {
+extension RequestInfo {
     
     var age: Double { Date().timeIntervalSince1970 - time }
     

@@ -15,17 +15,20 @@ public class ArrayResponse<T> : Response {
         super.init(response: response)
         if (error == nil) {
             if let _ = T.self as? BlockConvertible.Type {
-                constructFromBlock(arc: T.self as! BlockConvertible.Type)
+                constructFromBlock(type: T.self as! BlockConvertible.Type)
+            }
+            else {
+                LogError()
             }
         }
     }
     
-    private func constructFromBlock(arc: BlockConvertible.Type) {
+    private func constructFromBlock(type: BlockConvertible.Type) {
                 
         guard let blockArray = block.toArray else { networkError = .failedToCreateBlock; return }
         
         for objectBlock in blockArray {
-            if let object = try? arc.init(block: objectBlock) as? T {
+            if let object = try? type.init(block: objectBlock) as? T {
                 array.append(object)
             }
             else {
@@ -34,4 +37,3 @@ public class ArrayResponse<T> : Response {
         }
     }
 }
-

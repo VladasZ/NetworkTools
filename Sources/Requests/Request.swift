@@ -1,5 +1,5 @@
 //
-//  NewRequestFunction.swift
+//  Request.swift
 //  Actors Pocket Guide
 //
 //  Created by Vladas Zakrevskis on 21.10.2020.
@@ -9,7 +9,7 @@
 import Foundation
 
 
-public class RequestFunction {
+public class Request {
     
     public typealias Function
         = (_ cacheParams: CacheParams, _ completion: @escaping RequestCompletion) -> ()

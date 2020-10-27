@@ -39,7 +39,7 @@ public class Network {
         
         async {
             
-            let requestForCache = Request(url: url.toString,
+            let requestForCache = RequestInfo(url: url.toString,
                                           method: method.rawValue,
                                           params: params?.toString,
                                           headers: headers,

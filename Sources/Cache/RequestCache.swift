@@ -19,28 +19,28 @@ class RequestCache : Mappable {
     
     var tooOld: Bool { age > maxAge }
     
-    var request: Request
+    var request: RequestInfo
     var response: CoreNetworkResponse
     
-    private init(request: Request, response: CoreNetworkResponse, maxAge: Double) {
+    private init(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         self.request  = request
         self.response = response
         self.maxAge   = maxAge
     }
     
     required init() {
-        request  = Request()
+        request  = RequestInfo()
         response = CoreNetworkResponse()
         maxAge   = 15
     }
     
-    static func store(request: Request, response: CoreNetworkResponse, maxAge: Double) {
+    static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         objc_sync_enter(self)
         cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
         objc_sync_exit(self)
     }
     
-    static func getFor(_ request: Request) -> CoreNetworkResponse? {
+    static func getFor(_ request: RequestInfo) -> CoreNetworkResponse? {
                         
         guard let cache = (self.cache.first { $0.request.tempHash == request.tempHash }) else {
             Log("No cache")
