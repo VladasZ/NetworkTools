@@ -19,12 +19,15 @@ public class CacheParams {
         self.maxAge  = maxAge
     }
 
+    var shouldCache: Bool {
+        if !Network.cacheEnabled { return false }
+        return enabled || Network.forceCache
+    }
 
     public static let enabled  = CacheParams()
     public static let disabled = CacheParams(enabled: false)
 
-    public static let `default`  = CacheParams.disabled
-
+    public static let `default` = CacheParams.disabled
 
     public static func maxAge(_ age: Double) -> CacheParams {
         CacheParams(maxAge: age)

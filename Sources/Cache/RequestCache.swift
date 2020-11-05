@@ -97,7 +97,7 @@ extension RequestCache {
     }
     
     static func restore() {
-        if !Network.cacheRequests { return }
+        if !Network.cacheEnabled { return }
         
         let json = cacheStorage
         if json.isEmpty {

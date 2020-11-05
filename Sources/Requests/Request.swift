@@ -9,10 +9,10 @@
 import Foundation
 
 
-public class Request {
+public class Request<Response> {
     
     public typealias Function
-        = (_ cacheParams: CacheParams, _ completion: @escaping RequestCompletion) -> ()
+        = (_ cacheParams: CacheParams, _ completion: @escaping RequestCompletion<Response>) -> ()
     
     private var _cacheParams: CacheParams
     private let _function: Function
@@ -22,16 +22,16 @@ public class Request {
         _function    = function
     }
     
-    func cache(_ cacheParams: CacheParams) -> Self {
-        _cacheParams = cacheParams
-        return self
-    }
+//    func cache(_ cacheParams: CacheParams) -> Self {
+//        _cacheParams = cacheParams
+//        return self
+//    }
     
-    func call(_ completion: @escaping RequestCompletion) {
+    func call(_ completion: @escaping RequestCompletion<Response>) {
         _function(_cacheParams, completion)
     }
     
-    func callAsFunction(_ completion: @escaping RequestCompletion) {
+    func callAsFunction(_ completion: @escaping RequestCompletion<Response>) {
         _function(_cacheParams, completion)
     }
     

@@ -7,14 +7,10 @@
 
 internal typealias CoreRequestCompletion = (_ response: CoreNetworkResponse) -> ()
 
-public typealias RequestCompletion = (_ response: Response) -> ()
+public typealias RequestCompletion<Result> = (_ response: Response<Result>) -> ()
+public typealias SimpleCompletion = RequestCompletion<Void>
 
-public typealias ObjectCompletion<Result> = (_ response: ObjectResponse<Result>) -> ()
-
-public typealias ObjectRequest<Result> = (_ completion: @escaping ObjectCompletion<Result>) -> ()
-
-public typealias ParamRequest      <Param: Parameters>                           = (_ param: Param, _ completion: @escaping RequestCompletion)        -> ()
-public typealias ParamObjectRequest<Param: Parameters, Result: BlockConvertible> = (_ param: Param, _ completion: @escaping ObjectCompletion<Result>) -> ()
+public typealias ParamRequest<Param: Parameters, Result> = (_ param: Param, _ completion: @escaping RequestCompletion<Result>) -> ()
 
 public typealias Headers = [String : String]
 
@@ -27,7 +23,7 @@ public extension Network {
                         method: HTTPMethod = .get,
                         cacheParams: CacheParams = .default,
                         urlEncodeParams: Bool = false
-        ) -> Request
+        ) -> Request<Void>
     {
         Request(cacheParams: cacheParams) { _cacheParams, completion in
             Network.coreRequest(url,
@@ -35,23 +31,23 @@ public extension Network {
                                 headers: defaultHeaders,
                                 cacheParams: _cacheParams,
                                 urlEncodeParams: urlEncodeParams)
-            { completion(Response(response: $0)) }
+            { completion(Response<Void>(response: $0)) }
         }
     }
 
-    static func request<Result: BlockConvertible>(_ url: URLConvertible,
-                                                  method: HTTPMethod = .get,
-                                                  resultType: Result.Type,
-                                                  cacheParams: CacheParams = .default,
-                                                  urlEncodeParams: Bool = false) -> ObjectRequest<Result>
+    static func request<Result>(_ url: URLConvertible,
+                                method: HTTPMethod = .get,
+                                resultType: Result.Type,
+                                cacheParams: CacheParams = .default,
+                                urlEncodeParams: Bool = false) -> Request<Result>
     {
-        { completion in
+        Request<Result>(cacheParams: cacheParams) { _cacheParams, completion in
             Network.coreRequest(url,
                     method: method,
                     headers: defaultHeaders,
-                    cacheParams: cacheParams,
+                    cacheParams: _cacheParams,
                     urlEncodeParams: urlEncodeParams)
-            { completion(ObjectResponse<Result>(response: $0)) }
+            { completion(Response<Result>(response: $0)) }
         }
     }
 
@@ -60,7 +56,7 @@ public extension Network {
                                             paramsType: Params.Type,
                                             cacheParams: CacheParams = .default,
                                             urlEncodeParams: Bool = false
-        ) -> ParamRequest<Params>
+        ) -> ParamRequest<Params, Void>
     {
         { parameters, completion in
             Network.coreRequest(url,
@@ -80,7 +76,7 @@ public extension Network {
                                   paramsType: Params.Type,
                                   resultType: Result.Type,
                                   cacheParams: CacheParams = .default,
-                                  urlEncodeParams: Bool = false) -> ParamObjectRequest<Params, Result>
+                                  urlEncodeParams: Bool = false) -> ParamRequest<Params, Result>
     {
         { parameters, completion in
             Network.coreRequest(url,
@@ -89,7 +85,7 @@ public extension Network {
                                 headers: defaultHeaders,
                                 cacheParams: cacheParams,
                                 urlEncodeParams: urlEncodeParams)
-            { completion(ObjectResponse<Result>(response: $0)) }
+            { completion(Response<Result>(response: $0)) }
         }
     }
 
