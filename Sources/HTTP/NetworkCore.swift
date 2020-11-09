@@ -27,6 +27,8 @@ public class Network {
     public static var verboseExtractLog    = false
     public static var logKeyExtractFailure = false
 
+    public static var cacheDisabled: Bool { get { !cacheEnabled } set { cacheEnabled = !newValue } }
+
     public static var customErrorHandle: ((Block?) -> String?)?
 
     internal static let session = URLSession(configuration: .default)
@@ -47,7 +49,7 @@ public class Network {
                     headers: headers,
                     urlEncode: urlEncodeParams)
 
-            if cacheParams.shouldCache {
+            if cacheParams.shoudeGetFromCache {
                 if let cachedResponse = RequestCache.getFor(requestForCache) {
                     sync { completion(cachedResponse) }
                     return

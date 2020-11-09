@@ -14,13 +14,19 @@ public class CacheParams {
     let enabled: Bool
     let maxAge: Double
     
-    init(enabled: Bool = true, maxAge: Double = 15) {
+    init(enabled: Bool = true, maxAge: Double = 150000) {
         self.enabled = enabled
         self.maxAge  = maxAge
     }
 
     var shouldCache: Bool {
-        if !Network.cacheEnabled { return false }
+        if Network.cacheDisabled { return false }
+        return enabled || Network.forceCache
+    }
+
+    var shoudeGetFromCache: Bool {
+        if Network.cacheDisabled { return false }
+        if Connection.ok { return false }
         return enabled || Network.forceCache
     }
 

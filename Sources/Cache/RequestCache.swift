@@ -37,6 +37,7 @@ class RequestCache : Mappable {
     static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         objc_sync_enter(self)
         cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
+        store()
         objc_sync_exit(self)
     }
     
