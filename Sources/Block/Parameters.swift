@@ -75,9 +75,3 @@ extension Array : Parameters where Element: Numeric & Hashable {
         return result.dropLast(2) + "]"
     }
 }
-
-extension Mappable : Parameters {
-    public var toString:      String { toJsonString() }
-    public var toJsonString:  String { toJsonString() }
-    public var tempHash:      Int    { hashValue      }
-}

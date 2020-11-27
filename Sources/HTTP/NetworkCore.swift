@@ -59,7 +59,7 @@ public class Network {
             let inURL = url
 
             guard var targetUrl = (baseURL + url).toUrl else {
-                sync { completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL)) }
+                sync { completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: "invalid URL")) }
                 return
             }
 
@@ -68,7 +68,7 @@ public class Network {
             if let params = params {
                 if params.isInt {
                     guard let urlAppendingInt = (targetUrl.toString + "/" + params.toString).toUrl else {
-                        sync { completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: .invalidURL)) }
+                        sync { completion(CoreNetworkResponse(requestURL: inURL.toString, method: method, error: "invalid URL")) }
                         return
                     }
                     targetUrl = urlAppendingInt
@@ -78,7 +78,7 @@ public class Network {
                 }
                 else if urlEncodeParams {
                     guard let urlWithParams = params.appendToUrl(targetUrl) else {
-                        sync { completion(CoreNetworkResponse(requestURL: targetUrl.toString, method: method, error: .noParams)) }
+                        sync { completion(CoreNetworkResponse(requestURL: targetUrl.toString, method: method, error: "no params")) }
                         return
                     }
                     targetUrl = urlWithParams
@@ -115,7 +115,7 @@ public class Network {
                         completion(CoreNetworkResponse(requestURL: targetUrl.toString,
                                 method: method,
                                 responseCode: statusCode,
-                                error: .networkError(error)))
+                                error: error))
                     }
                     return
                 }
@@ -125,7 +125,7 @@ public class Network {
                         completion(CoreNetworkResponse(requestURL: targetUrl.toString,
                                 method: method,
                                 responseCode: statusCode,
-                                error: .noData))
+                                error: "no data"))
                     }
                     return
                 }

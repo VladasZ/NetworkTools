@@ -18,17 +18,16 @@ public class Response<T> {
     public var requestURL:   URLConvertible
     public var method:       HTTPMethod
     public var responseCode: Int?
-    public var networkError: NetworkError?
     public var block:        Block
     public var data:         String
-    public var error:        String? { networkError?.localizedDescription }
+    public var error:        String?
     public var e:            String? { error } // ¯\_(ツ)_/¯
 
     internal init(response: CoreNetworkResponse) {
         requestURL   = response.requestURL
         method       = response.method
         responseCode = response.responseCode
-        networkError = response.error
+        error        = response.error
         block        = Block(string: response.data) ?? Block.empty
         data =       response.data
 
@@ -70,7 +69,7 @@ public class Response<T> {
 
     private func constructObject(type: BlockConvertible.Type) {
         guard let _object = try? type.init(block: block) as? T else {
-            networkError = .failedToCreateBlock
+            error = "Failed to create block"
             return
         }
         object = _object

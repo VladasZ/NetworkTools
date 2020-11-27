@@ -9,18 +9,17 @@
 import Foundation
 
 
-class RequestCache : Mappable {
-    
-    private static var cache: [RequestCache] = []
-    
-    var maxAge: Double
-    
-    var age: Double { request.age }
-    
-    var tooOld: Bool { age > maxAge }
+fileprivate class Key {
+    static let request  = "request"
+    static let response = "response"
+    static let maxAge   = "maxAge"
+}
+
+class RequestCache : BlockConvertible {
     
     var request: RequestInfo
     var response: CoreNetworkResponse
+    var maxAge: Double
     
     private init(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         self.request  = request
@@ -33,80 +32,77 @@ class RequestCache : Mappable {
         response = CoreNetworkResponse()
         maxAge   = 15
     }
-    
-    static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
-        objc_sync_enter(self)
-        cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
-        store()
-        objc_sync_exit(self)
+
+    required init(block: Block) throws {
+        request  = try block.extract(Key.request)
+        response = try block.extract(Key.response)
+        maxAge   = try block.extract(Key.maxAge)
     }
-    
-    static func getFor(_ request: RequestInfo) -> CoreNetworkResponse? {
-                        
-        guard let cache = (self.cache.first { $0.request.tempHash == request.tempHash }) else {
-            Log("No cache")
-            return nil
-        }
-                
-        if cache.tooOld {
-            if !Connection.ok {
-                return cache.response
-            }
-            objc_sync_enter(self)
-            self.cache.remove(cache)
-            objc_sync_exit(self)
-            return nil
-        }
-        
-        return cache.response
-        
-//        for note in cache {
-//            if note.request.tempHash == request.tempHash {
-//                Log("cached")
-//                if note.tooOld && Connection.ok {
-//                    oldCache = note
-//                    break;
-//                }
-//                objc_sync_exit(self)
-//                return note.response
-//            }
-//        }
-        
-//        if let old = oldCache {
-//            cache.remove(old)
-//        }
-            
-     //   objc_sync_exit(self)
-     //   return nil
-        
+
+    func createBlock(block: inout Block) {
+        block.append(Key.request,  request)
+        block.append(Key.response, response)
+        block.append(Key.maxAge,   maxAge)
     }
-    
 }
 
 extension RequestCache {
     
     @CompressedStringStorage("APGCacheStorage")
     private static var cacheStorage: String
-    
-    static func invalidate() {
-        cache = []
-        cacheStorage = ""
-    }
-    
+
     static func store() {
-        cacheStorage = cache.toJsonString()
+        LogWarning(cache.block.JSONString)
+        cacheStorage = cache.block.JSONString
     }
     
     static func restore() {
-        if !Network.cacheEnabled { return }
+
+        if Network.cacheDisabled {
+            Log("Request cache disabled")
+            return
+        }
         
         let json = cacheStorage
-        if json.isEmpty {
+        if json.isEmpty || json == "{}" {
             Log("No cache")
             return
         }
-        cache = [RequestCache](json: json)
+        
+        guard let parsedCache = try? [RequestCache](block: Block(string: json)) else {
+            LogError("Failed to parse request cache")
+            return
+        }
+        
+        RequestCache.cache = parsedCache
         Log("\(cache.count) cached requests loaded.")
     }
     
+}
+
+extension RequestCache {
+
+    static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
+        objc_sync_enter(self)
+        cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
+        store()
+        objc_sync_exit(self)
+    }
+
+    static func getFor(_ request: RequestInfo) -> CoreNetworkResponse? {
+        guard let stored = (cache.first { $0.request.tempHash == request.tempHash }) else {
+            Log("No cache")
+            return nil
+        }
+        return stored.response
+    }
+
+}
+
+extension RequestCache {
+
+    private static var cache: [RequestCache] = []
+
+    var age: Double { request.age }
+    var tooOld: Bool { age > maxAge }
 }

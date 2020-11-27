@@ -9,7 +9,16 @@
 import Foundation
 
 
-class RequestInfo: Mappable {
+fileprivate class Key {
+    static let url       = "url"
+    static let method    = "method"
+    static let params    = "params"
+    static let headers   = "headers"
+    static let urlEncode = "urlEncode"
+    static let time      = "time"
+}
+
+class RequestInfo: BlockConvertible {
     
     var url:       String
     var method:    String
@@ -46,7 +55,7 @@ class RequestInfo: Mappable {
         "\(url) \(method) \(params.toString) \(headers)"
     }
 
-    override var tempHash: Int {
+    var tempHash: Int {
         var hasher = Hasher()
         hasher.combine(url)
         hasher.combine(method)
@@ -54,7 +63,33 @@ class RequestInfo: Mappable {
         hasher.combine(headers)
         return hasher.finalize()
     }
-    
+
+    required init(block: Block) throws {
+        url       = try block.extract(Key.url)
+        method    = try block.extract(Key.method)
+        params    = try block.extract(Key.params)
+
+        let headersString: String = try block.extract(Key.headers)
+
+        headers   = try convertToDictionary(headersString)
+        time      = try block.extract(Key.time)
+        urlEncode = try block.extract(Key.urlEncode)
+    }
+
+    func createBlock(block: inout Block) {
+        block.append(Key.url,       url)
+        block.append(Key.method,    method)
+        block.append(Key.params,    params)
+        block.append(Key.headers,   toJSON(headers))
+        block.append(Key.time,      time)
+        block.append(Key.urlEncode, urlEncode)
+    }
+}
+
+fileprivate func convertToDictionary(_ text: String) throws -> [String: String] {
+    guard let data = text.data(using: .utf8) else { return [:] }
+    let anyResult: Any = try JSONSerialization.jsonObject(with: data, options: [])
+    return anyResult as? [String: String] ?? [:]
 }
 
 extension RequestInfo {

@@ -9,19 +9,27 @@
 import Foundation
 
 
-class CoreNetworkResponse : Mappable {
-    
+fileprivate class Key {
+    static let requestURL   = "requestURL"
+    static let method       = "method"
+    static let responseCode = "responseCode"
+    static let error        = "error"
+    static let data         = "data"
+}
+
+class CoreNetworkResponse : BlockConvertible {
+
     public var requestURL:   String
     public var method:       HTTPMethod
     public var responseCode: Int
-    public var error:        NetworkError?
+    public var error:        String?
     
     public var data: String
     
     init(requestURL:   String,
          method:       HTTPMethod,
          responseCode: Int? = nil,
-         error:        NetworkError? = nil,
+         error:        String? = nil,
          data:         String = "") {
         
         self.requestURL   = requestURL
@@ -34,13 +42,13 @@ class CoreNetworkResponse : Mappable {
         
         if let customHandle = Network.customErrorHandle {
             if let error = customHandle(block) {
-                self.error = .networkError(error)
+                self.error = error
                 return
             }
         }
         
         if let error = block?["error"]?.toString, error != "null" {
-            self.error = .networkError(error)
+            self.error = error
             return
         }
         
@@ -48,7 +56,7 @@ class CoreNetworkResponse : Mappable {
         
         if let responseCode = responseCode {
             if self.error == nil && responseCode > 299 {
-                self.error = .networkError("\(responseCode)")
+                self.error = "\(responseCode)"
             }
         }
         
@@ -60,9 +68,25 @@ class CoreNetworkResponse : Mappable {
         responseCode = -1
         data         = ""
     }
-    
-    override public func propertyMapping() -> [(keyInObject: String?, keyInResource: String?)] {
-        [(keyInObject: "error", keyInResource: nil)]
+
+    required init(block: Block) throws {
+        requestURL   = try block.extract(Key.requestURL)
+
+        let methodString: String = try block.extract(Key.method)
+        method       = HTTPMethod(rawValue: methodString)!
+
+        responseCode = try block.extract(Key.responseCode)
+        data         = try block.extract(Key.data)
+
+        error = try? block.extract(Key.requestURL)
+    }
+
+    func createBlock(block: inout Block) {
+        block.append(Key.requestURL,   requestURL)
+        block.append(Key.method,       method.rawValue)
+        block.append(Key.responseCode, responseCode)
+        block.append(Key.data,         data)
+        block.append(Key.error,        error)
     }
     
 }

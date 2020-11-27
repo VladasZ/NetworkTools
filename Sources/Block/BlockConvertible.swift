@@ -50,8 +50,14 @@ public extension BlockConvertible {
 public extension Array where Element: BlockConvertible {
     
     var block: Block {
-        LogError()
-        return Block.empty
+
+        var array = [Block]()
+
+        for value in self {
+            array.append(value.block)
+        }
+
+        return Block(value: array)
     }
     
     init(data: Data?) throws {
