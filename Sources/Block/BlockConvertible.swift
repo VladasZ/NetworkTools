@@ -51,13 +51,12 @@ public extension Array where Element: BlockConvertible {
     
     var block: Block {
 
-        var array = [Block]()
-
-        for value in self {
-            array.append(value.block)
+        let dictArray = self.map { value -> [String : AnyHashable] in
+            if let dictionary = value.toDictionary { return dictionary }
+            else { LogError(); return ["error" : "error"] }
         }
 
-        return Block(value: array)
+        return Block(value: dictArray)
     }
     
     init(data: Data?) throws {

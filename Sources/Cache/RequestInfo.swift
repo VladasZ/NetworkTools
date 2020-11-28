@@ -35,7 +35,7 @@ class RequestInfo: BlockConvertible {
          urlEncode: Bool) {
         self.url       = url
         self.method    = method
-        self.params    = params.anyString
+        self.params    = params.anyString.toBase64()
         self.headers   = headers
         self.urlEncode = urlEncode
         
@@ -52,14 +52,14 @@ class RequestInfo: BlockConvertible {
     }
     
     var info: String {
-        "\(url) \(method) \(params.toString) \(headers)"
+        "\(url) \(method) \(params) \(headers)"
     }
 
     var tempHash: Int {
         var hasher = Hasher()
         hasher.combine(url)
         hasher.combine(method)
-        hasher.combine(params.sorted().hashValue)
+        hasher.combine(params)
         hasher.combine(headers)
         return hasher.finalize()
     }
@@ -68,10 +68,7 @@ class RequestInfo: BlockConvertible {
         url       = try block.extract(Key.url)
         method    = try block.extract(Key.method)
         params    = try block.extract(Key.params)
-
-        let headersString: String = try block.extract(Key.headers)
-
-        headers   = try convertToDictionary(headersString)
+        headers   = try block.extract(Key.headers)
         time      = try block.extract(Key.time)
         urlEncode = try block.extract(Key.urlEncode)
     }
@@ -80,7 +77,7 @@ class RequestInfo: BlockConvertible {
         block.append(Key.url,       url)
         block.append(Key.method,    method)
         block.append(Key.params,    params)
-        block.append(Key.headers,   toJSON(headers))
+        block.append(Key.headers,   headers)
         block.append(Key.time,      time)
         block.append(Key.urlEncode, urlEncode)
     }

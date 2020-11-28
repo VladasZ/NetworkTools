@@ -98,6 +98,24 @@ public class Block {
         
         return try [T](block: data)
     }
+
+    public func extract<T>(_ key: String) throws -> [String : T] where T : BlockConvertible {
+
+        guard let data = self[key] else {
+            try riseFailure("Failed to extract block for key: \(key)")
+        }
+
+        guard let dict = data.toDictionary else {
+            try riseFailure("Failed to extract block for key: \(key)")
+
+        }
+
+        guard let targetDict = dict as? [String : T] else {
+            try riseFailure("Failed to extract block for key: \(key)")
+        }
+
+        return targetDict
+    }
     
     public func tryExtract<T: DefaultInitializable>(_ key: String, _ def: T = T.defaultValue) -> T {
         do    { return try extract(key) }
@@ -144,7 +162,13 @@ public class Block {
             else { LogError(); return ["error" : "error"] }
         }
         self.value = dictionary
-        return
+    }
+
+    public func append(_ key: String, _ value: [String : AnyHashable]?) {
+        guard let value      = value        else {                return }
+        guard var dictionary = toDictionary else { LogError(key); return }
+        dictionary[key] = value
+        self.value = dictionary
     }
     
     public func append<T: BlockSupportedType>(_ key: String, _ value: T?, appendsNil: Bool = false) {
