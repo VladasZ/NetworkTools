@@ -139,6 +139,9 @@ public class Network {
                 if cacheParams.shouldCache {
                     RequestCache.store(request: requestForCache, response: response, maxAge: cacheParams.maxAge)
                 }
+                else {
+                    LogWarning("Shouldnt store cache \(requestForCache.url))")
+                }
 
                 sync { completion(response) }
 

@@ -52,7 +52,6 @@ extension RequestCache {
     private static var cacheStorage: String
 
     static func store() {
-        LogWarning(cache.block.JSONString)
         cacheStorage = cache.block.JSONString
     }
     
@@ -76,6 +75,11 @@ extension RequestCache {
         
         RequestCache.cache = parsedCache
         Log("\(cache.count) cached requests loaded.")
+
+        for ca in parsedCache {
+            Log(ca.request.url)
+        }
+
     }
     
 }
@@ -84,16 +88,19 @@ extension RequestCache {
 
     static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         objc_sync_enter(self)
+        Log("Storing \(request.url)")
         cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
         store()
         objc_sync_exit(self)
     }
 
     static func getFor(_ request: RequestInfo) -> CoreNetworkResponse? {
+        Log("Getting cache for: \(request.url)")
         guard let stored = (cache.first { $0.request.tempHash == request.tempHash }) else {
-            Log("No cache")
+            Log("Fail")
             return nil
         }
+        Log("OK")
         return stored.response
     }
 

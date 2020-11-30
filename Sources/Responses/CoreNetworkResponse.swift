@@ -76,17 +76,20 @@ class CoreNetworkResponse : BlockConvertible {
         method       = HTTPMethod(rawValue: methodString)!
 
         responseCode = try block.extract(Key.responseCode)
-        data         = try block.extract(Key.data)
 
-        error = try? block.extract(Key.requestURL)
+        data = try block.extract(Key.data)
+        data = data.fromBase64()
+
+        error = try? block.extract(Key.error)
     }
 
     func createBlock(block: inout Block) {
         block.append(Key.requestURL,   requestURL)
         block.append(Key.method,       method.rawValue)
         block.append(Key.responseCode, responseCode)
-        block.append(Key.data,         data)
         block.append(Key.error,        error)
+
+        block.append(Key.data, data.toBase64())
     }
     
 }
