@@ -45,8 +45,8 @@ public extension Parameters {
     }
 }
 
-extension Dictionary : Parameters where Value: Hashable {
-    public var toString:      String                 { toJSON(self)                    }
+extension Dictionary : Parameters where Value: Hashable, Key: Comparable {
+    public var toString:      String                 { toJSON(self) }
     public var toDictionary: [String : AnyHashable]? { self as? [String : AnyHashable] }
     public var tempHash: Int { hashValue }
 }

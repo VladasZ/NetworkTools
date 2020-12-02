@@ -67,7 +67,7 @@ class RequestInfo: BlockConvertible {
     required init(block: Block) throws {
         url       = try block.extract(Key.url)
         method    = try block.extract(Key.method)
-        params    = try block.extract(Key.params)
+        params    = block.tryExtract(Key.params)
         headers   = try block.extract(Key.headers)
         time      = try block.extract(Key.time)
         urlEncode = try block.extract(Key.urlEncode)

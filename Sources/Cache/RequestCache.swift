@@ -52,7 +52,9 @@ extension RequestCache {
     private static var cacheStorage: String
 
     static func store() {
-        cacheStorage = cache.block.JSONString
+        let block = cache.block
+        Log("Storing \(block.toArray?.count)")
+        cacheStorage = block.JSONString
     }
     
     static func restore() {
@@ -73,7 +75,7 @@ extension RequestCache {
             return
         }
         
-        RequestCache.cache = parsedCache
+        cache = parsedCache
         Log("\(cache.count) cached requests loaded.")
 
         for ca in parsedCache {
@@ -90,7 +92,6 @@ extension RequestCache {
         objc_sync_enter(self)
         Log("Storing \(request.url)")
         cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
-        store()
         objc_sync_exit(self)
     }
 
@@ -102,6 +103,17 @@ extension RequestCache {
         }
         Log("OK")
         return stored.response
+    }
+
+    static func dump() {
+        Log("\(cache.count) cached requests stored.")
+        for ca in cache {
+            Log(ca.request.url)
+        }
+    }
+
+    static func wipe() {
+        cacheStorage = ""
     }
 
 }

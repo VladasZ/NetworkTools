@@ -9,7 +9,7 @@
 import Foundation
 
 public func toJSON(_ value: Any) -> String {
-    guard let data = try? JSONSerialization.data(withJSONObject: value, options: []) else { return "No JSON data" }
+    guard let data = try? JSONSerialization.data(withJSONObject: value, options: [.sortedKeys]) else { return "No JSON data" }
     return data.JSONString.replacingOccurrences(of: "\\\"", with: "\"")
 }
 
