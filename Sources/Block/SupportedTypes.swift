@@ -21,21 +21,21 @@ public protocol DefaultInitializable {
 }
 
 extension Bool   : DefaultInitializable {
-    public static var defaultValue: Bool   { return Bool()   }
+    public static var defaultValue: Bool   { Bool()   }
 }
 
 extension Int    : DefaultInitializable {
-    public static var defaultValue: Int    { return Int()    }
+    public static var defaultValue: Int    { Int()    }
 }
 
 extension Double : DefaultInitializable {
-    public static var defaultValue: Double { return Double() }
+    public static var defaultValue: Double { Double() }
 }
 
 extension String : DefaultInitializable {
-    public static var defaultValue: String { return Swift.String() }
+    public static var defaultValue: String { Swift.String() }
 }
 
 extension Dictionary : DefaultInitializable {
-    public static var defaultValue: Dictionary { return [:] }
+    public static var defaultValue: Dictionary { [:] }
 }

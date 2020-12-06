@@ -62,6 +62,12 @@ extension Int : Parameters {
     public var tempHash: Int { hashValue }
 }
 
+public class NoParams : Parameters {
+    public var toString: String { "none" }
+    public var isInt:    Bool   { false  }
+    public var tempHash: Int    { -1     }
+}
+
 extension Array : Parameters where Element: Numeric & Hashable {
     public var isArray: Bool { true }
     public var toString: String { "\(self)" }

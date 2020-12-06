@@ -23,9 +23,9 @@ public extension Network {
                         method: HTTPMethod = .get,
                         cacheParams: CacheParams = .default,
                         urlEncodeParams: Bool = false
-        ) -> Request<Void>
+        ) -> Request<Void, Void>
     {
-        Request(cacheParams: cacheParams) { _cacheParams, completion in
+        Request(cacheParams: cacheParams) { _cacheParams, _, completion in
             Network.coreRequest(url,
                                 method: method,
                                 headers: defaultHeaders,
@@ -39,9 +39,9 @@ public extension Network {
                                 method: HTTPMethod = .get,
                                 resultType: Result.Type,
                                 cacheParams: CacheParams = .default,
-                                urlEncodeParams: Bool = false) -> Request<Result>
+                                urlEncodeParams: Bool = false) -> Request<Void, Result>
     {
-        Request<Result>(cacheParams: cacheParams) { _cacheParams, completion in
+        Request(cacheParams: cacheParams) { _cacheParams, _, completion in
             Network.coreRequest(url,
                     method: method,
                     headers: defaultHeaders,
@@ -56,14 +56,14 @@ public extension Network {
                                             paramsType: Params.Type,
                                             cacheParams: CacheParams = .default,
                                             urlEncodeParams: Bool = false
-        ) -> ParamRequest<Params, Void>
+        ) -> Request<Params, Void>
     {
-        { parameters, completion in
+        Request(cacheParams: cacheParams) { _cacheParams, parameters, completion in
             Network.coreRequest(url,
                                 method: method,
                                 params: parameters,
                                 headers: defaultHeaders,
-                                cacheParams: cacheParams,
+                                cacheParams: _cacheParams,
                                 urlEncodeParams: urlEncodeParams)
             { completion(Response(response: $0)) }
         }
@@ -76,14 +76,14 @@ public extension Network {
                                   paramsType: Params.Type,
                                   resultType: Result.Type,
                                   cacheParams: CacheParams = .default,
-                                  urlEncodeParams: Bool = false) -> ParamRequest<Params, Result>
+                                  urlEncodeParams: Bool = false) -> Request<Params, Result>
     {
-        { parameters, completion in
+        Request(cacheParams: cacheParams) { _cacheParams, parameters, completion in
             Network.coreRequest(url,
                                 method: method,
                                 params: parameters,
                                 headers: defaultHeaders,
-                                cacheParams: cacheParams,
+                                cacheParams: _cacheParams,
                                 urlEncodeParams: urlEncodeParams)
             { completion(Response<Result>(response: $0)) }
         }

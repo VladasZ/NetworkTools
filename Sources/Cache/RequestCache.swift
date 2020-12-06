@@ -18,7 +18,7 @@ fileprivate class Key {
 class RequestCache : BlockConvertible {
 
     static var logEnabled = false
-    
+
     var request: RequestInfo
     var response: CoreNetworkResponse
     var maxAge: Double
@@ -53,9 +53,9 @@ extension RequestCache {
     @CompressedStringStorage("APGCacheStorage")
     private static var cacheStorage: String
 
-    static func store() {
+    private static func store() {
         let block = cache.block
-        Log("Storing \(block.toArray?.count)", enabled: logEnabled)
+        Log("Storing \(cache.count)", enabled: logEnabled)
         cacheStorage = block.JSONString
     }
     
@@ -73,7 +73,7 @@ extension RequestCache {
         }
         
         guard let parsedCache = try? [RequestCache](block: Block(string: json)) else {
-            LogError("Failed to parse request cache", enabled: logEnabled)
+            LogError("Failed to parse request cache")
             return
         }
         
@@ -93,7 +93,14 @@ extension RequestCache {
     static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         objc_sync_enter(self)
         Log("Storing \(request.url)", enabled: logEnabled)
+
+        if let sameRequest = cache.firstIndex { $0.request.tempHash == request.tempHash } {
+            Log("Deleting old", enabled: logEnabled)
+            cache.remove(at: sameRequest)
+        }
+
         cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
+        store()
         objc_sync_exit(self)
     }
 
@@ -103,14 +110,18 @@ extension RequestCache {
             Log("Fail", enabled: logEnabled)
             return nil
         }
-        Log("OK", enabled: logEnabled)
+        if stored.tooOld {
+            Log("Too old", enabled: logEnabled)
+            return nil
+        }
+        Log("OK. Age: \(stored.age)", enabled: logEnabled)
         return stored.response
     }
 
     static func dump() {
         Log("\(cache.count) cached requests stored.", enabled: logEnabled)
         for ca in cache {
-            Log(ca.request.url)
+            Log(ca.request.url, enabled: logEnabled)
         }
     }
 
@@ -125,5 +136,8 @@ extension RequestCache {
     private static var cache: [RequestCache] = []
 
     var age: Double { request.age }
-    var tooOld: Bool { age > maxAge }
+    var tooOld: Bool {
+        Log(maxAge)
+        return age > maxAge && !Network.forceCache
+    }
 }
