@@ -140,7 +140,7 @@ public class Network {
                     RequestCache.store(request: requestForCache, response: response, maxAge: cacheParams.maxAge)
                 }
                 else {
-                    LogWarning("Shouldnt store cache \(requestForCache.url))")
+                    LogWarning("Shouldnt store cache \(requestForCache.url))", enabled: RequestCache.logEnabled)
                 }
 
                 sync { completion(response) }

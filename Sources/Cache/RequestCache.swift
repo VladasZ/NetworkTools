@@ -16,6 +16,8 @@ fileprivate class Key {
 }
 
 class RequestCache : BlockConvertible {
+
+    static var logEnabled = false
     
     var request: RequestInfo
     var response: CoreNetworkResponse
@@ -53,33 +55,33 @@ extension RequestCache {
 
     static func store() {
         let block = cache.block
-        Log("Storing \(block.toArray?.count)")
+        Log("Storing \(block.toArray?.count)", enabled: logEnabled)
         cacheStorage = block.JSONString
     }
     
     static func restore() {
 
         if Network.cacheDisabled {
-            Log("Request cache disabled")
+            Log("Request cache disabled", enabled: logEnabled)
             return
         }
         
         let json = cacheStorage
         if json.isEmpty || json == "{}" {
-            Log("No cache")
+            Log("No cache", enabled: logEnabled)
             return
         }
         
         guard let parsedCache = try? [RequestCache](block: Block(string: json)) else {
-            LogError("Failed to parse request cache")
+            LogError("Failed to parse request cache", enabled: logEnabled)
             return
         }
         
         cache = parsedCache
-        Log("\(cache.count) cached requests loaded.")
+        Log("\(cache.count) cached requests loaded.", enabled: logEnabled)
 
         for ca in parsedCache {
-            Log(ca.request.url)
+            Log(ca.request.url, enabled: logEnabled)
         }
 
     }
@@ -90,23 +92,23 @@ extension RequestCache {
 
     static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
         objc_sync_enter(self)
-        Log("Storing \(request.url)")
+        Log("Storing \(request.url)", enabled: logEnabled)
         cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
         objc_sync_exit(self)
     }
 
     static func getFor(_ request: RequestInfo) -> CoreNetworkResponse? {
-        Log("Getting cache for: \(request.url)")
+        Log("Getting cache for: \(request.url)", enabled: logEnabled)
         guard let stored = (cache.first { $0.request.tempHash == request.tempHash }) else {
-            Log("Fail")
+            Log("Fail", enabled: logEnabled)
             return nil
         }
-        Log("OK")
+        Log("OK", enabled: logEnabled)
         return stored.response
     }
 
     static func dump() {
-        Log("\(cache.count) cached requests stored.")
+        Log("\(cache.count) cached requests stored.", enabled: logEnabled)
         for ca in cache {
             Log(ca.request.url)
         }
