@@ -73,7 +73,7 @@ class CoreNetworkResponse : BlockConvertible {
         requestURL   = try block.extract(Key.requestURL)
 
         let methodString: String = try block.extract(Key.method)
-        method       = HTTPMethod(rawValue: methodString)!
+        method       = HTTPMethod(rawValue: methodString.uppercased())!
 
         responseCode = try block.extract(Key.responseCode)
 
