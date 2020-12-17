@@ -60,7 +60,6 @@ class RequestInfo: BlockConvertible {
         hasher.combine(url)
         hasher.combine(method)
         hasher.combine(params)
-        hasher.combine(headers)
         return hasher.finalize()
     }
 
