@@ -94,7 +94,7 @@ extension RequestCache {
         objc_sync_enter(self)
         Log("Storing \(request.url)", enabled: logEnabled)
 
-        if let sameRequest = cache.firstIndex { $0.request.tempHash == request.tempHash } {
+        if let sameRequest = (cache.firstIndex { $0.request.tempHash == request.tempHash }) {
             Log("Deleting old", enabled: logEnabled)
             cache.remove(at: sameRequest)
         }
