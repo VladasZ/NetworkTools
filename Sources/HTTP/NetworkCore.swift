@@ -20,12 +20,17 @@ public enum HTTPMethod : String {
 public class Network {
 
     public static var logCalls             = false
-    public static var forceCache           = false
     public static var logResponses         = false
     public static var cacheEnabled         = false
     public static var logBodyString        = false
     public static var verboseExtractLog    = false
     public static var logKeyExtractFailure = false
+    
+    public static var forceCacheTarget: String?
+    
+    public static var forceCache: Bool {
+        forceCacheTarget != nil
+    }
 
     public static var cacheDisabled: Bool { get { !cacheEnabled } set { cacheEnabled = !newValue } }
 
@@ -100,7 +105,7 @@ public class Network {
             request.httpBody = body
 
             if logCalls {
-                Log(targetUrl.toString)
+                Log("\(method.rawValue) \(targetUrl.toString)")
             }
 
             session.dataTask(with: request) { data, response, error in
@@ -137,7 +142,7 @@ public class Network {
                         data: String(data: data, encoding: .utf8) ?? "")
 
                 if cacheParams.shouldCache {
-                    RequestCache.store(request: requestForCache, response: response, maxAge: cacheParams.maxAge)
+                    RequestCache.store(request: requestForCache, response: response, maxAge: cacheParams.maxAge, target: forceCacheTarget)
                 }
                 else {
                     LogWarning("Shouldnt store cache \(requestForCache.url)", enabled: RequestCache.logEnabled)

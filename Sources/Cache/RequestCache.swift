@@ -13,6 +13,7 @@ fileprivate class Key {
     static let request  = "request"
     static let response = "response"
     static let maxAge   = "maxAge"
+    static let target   = "target"
 }
 
 class RequestCache : BlockConvertible {
@@ -22,11 +23,13 @@ class RequestCache : BlockConvertible {
     var request: RequestInfo
     var response: CoreNetworkResponse
     var maxAge: Double
+    var target: String?
     
-    private init(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
+    private init(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double, target: String?) {
         self.request  = request
         self.response = response
         self.maxAge   = maxAge
+        self.target   = target
     }
     
     required init() {
@@ -36,15 +39,17 @@ class RequestCache : BlockConvertible {
     }
 
     required init(block: Block) throws {
-        request  = try block.extract(Key.request)
-        response = try block.extract(Key.response)
-        maxAge   = try block.extract(Key.maxAge)
+        request  = try  block.extract(Key.request)
+        response = try  block.extract(Key.response)
+        maxAge   = try  block.extract(Key.maxAge)
+        target   = try? block.extract(Key.target)
     }
 
     func createBlock(block: inout Block) {
         block.append(Key.request,  request)
         block.append(Key.response, response)
         block.append(Key.maxAge,   maxAge)
+        block.append(Key.target,   target)
     }
 }
 
@@ -90,7 +95,7 @@ extension RequestCache {
 
 extension RequestCache {
 
-    static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double) {
+    static func store(request: RequestInfo, response: CoreNetworkResponse, maxAge: Double, target: String?) {
         objc_sync_enter(self)
         Log("Storing \(request.url)", enabled: logEnabled)
 
@@ -99,7 +104,14 @@ extension RequestCache {
             cache.remove(at: sameRequest)
         }
 
-        cache.append(RequestCache(request: request, response: response, maxAge: maxAge))
+        cache.append(RequestCache(request: request, response: response, maxAge: maxAge, target: target))
+        store()
+        objc_sync_exit(self)
+    }
+    
+    static func clearWhere(_ check: (RequestCache) -> (Bool)) {
+        objc_sync_enter(self)
+        cache.removeAll(where: check)
         store()
         objc_sync_exit(self)
     }
