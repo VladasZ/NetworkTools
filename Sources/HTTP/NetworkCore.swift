@@ -34,7 +34,7 @@ public class Network {
 
     public static var cacheDisabled: Bool { get { !cacheEnabled } set { cacheEnabled = !newValue } }
 
-    public static var customErrorHandle: ((String?, Block?) -> String?)?
+    public static var customErrorHandle: ((Int, String?, Block?) -> String?)?
 
     internal static let session = URLSession(configuration: .default)
 

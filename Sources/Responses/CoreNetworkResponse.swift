@@ -41,7 +41,7 @@ class CoreNetworkResponse : BlockConvertible {
         let block = Block(string: data)
         
         if let customHandle = Network.customErrorHandle {
-            self.error = customHandle(error, block)
+            self.error = customHandle(self.responseCode, error, block)
             return
         }
         
