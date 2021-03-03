@@ -109,7 +109,7 @@ extension RequestCache {
         objc_sync_exit(self)
     }
     
-    static func clearWhere(_ check: (RequestCache) -> (Bool)) {
+    private static func clearWhere(_ check: (RequestCache) -> (Bool)) {
         objc_sync_enter(self)
         cache.removeAll(where: check)
         store()
@@ -154,11 +154,11 @@ extension RequestCache {
 
 extension RequestCache {
 
-    static func clearFor(_ identifier: RequestIdentifier) {
+    private static func clearFor(_ identifier: RequestIdentifier) {
         clearWhere { identifier.match($0.request) }
     }
 
-    static func clearFor(_ identifier: RequestIdentifier, _ object: Any) {
+    private static func clearFor(_ identifier: RequestIdentifier, _ object: Any) {
         clearWhere { identifier.match($0.request, object) }
     }
 
