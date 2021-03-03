@@ -31,6 +31,10 @@ public class Network {
     public static var forceCache: Bool {
         forceCacheTarget != nil
     }
+    
+    public static var defaultCacheParams: CacheParams {
+        CacheParams(enabled: cacheEnabled, maxAge: 0)
+    }
 
     public static var cacheDisabled: Bool { get { !cacheEnabled } set { cacheEnabled = !newValue } }
 
@@ -42,7 +46,7 @@ public class Network {
                                      method: HTTPMethod,
                                      params: Parameters? = nil,
                                      headers: Headers,
-                                     cacheParams: CacheParams,
+                                     cacheParams: CacheParams = defaultCacheParams,
                                      urlEncodeParams: Bool = false,
                                      _ completion: @escaping CoreRequestCompletion) {
 
