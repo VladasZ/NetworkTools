@@ -151,3 +151,15 @@ extension RequestCache {
     var tooOld: Bool { age > maxAge && !Network.forceCache }
 
 }
+
+extension RequestCache {
+
+    static func clearFor(_ identifier: RequestIdentifier) {
+        clearWhere { identifier.match($0.request) }
+    }
+
+    static func clearFor(_ identifier: RequestIdentifier, _ object: Any) {
+        clearWhere { identifier.match($0.request, object) }
+    }
+
+}
