@@ -148,7 +148,10 @@ extension RequestCache {
     private static var cache: [RequestCache] = []
 
     var age: Double { request.age }
-    var tooOld: Bool { age > maxAge && !Network.forceCache }
+    var tooOld: Bool {
+        //age > maxAge && !Network.forceCache
+        false
+    }
 
 }
 

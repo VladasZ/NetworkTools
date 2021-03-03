@@ -32,7 +32,10 @@ public class CacheParams {
     public static let enabled  = CacheParams()
     public static let disabled = CacheParams(enabled: false)
 
-    public static let `default` = CacheParams.disabled
+    public static var `default`: CacheParams {
+        //.disabled
+        CacheParams(enabled: Network.cacheEnabled)
+    }
 
     public static func maxAge(_ age: Double) -> CacheParams {
         CacheParams(maxAge: age)
