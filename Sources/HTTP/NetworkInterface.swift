@@ -5,10 +5,13 @@
 //  Created by Vladas Zakrevskis on 11/16/17.
 //
 
+import Foundation
+
 internal typealias CoreRequestCompletion = (_ response: CoreNetworkResponse) -> ()
 
 public typealias RequestCompletion<Result> = (_ response: Response<Result>) -> ()
 public typealias SimpleCompletion = RequestCompletion<Void>
+public typealias DownloadCompletion = (_ tempUrl: URL?, _ response: URLResponse?, _ error: String?) -> ()
 
 public typealias ParamRequest<Param: Parameters, Result> = (_ param: Param, _ completion: @escaping RequestCompletion<Result>) -> ()
 
@@ -18,6 +21,10 @@ public extension Network {
     
     static var baseURL: URLConvertible?
     static var defaultHeaders = Headers()
+    
+    static func download(_ url: URLConvertible, _ completion: @escaping DownloadCompletion) {
+        Network.downloadRequest(url, headers: defaultHeaders, completion)
+    }
 
     static func request(_ url: URLConvertible,
                         method: HTTPMethod = .get,

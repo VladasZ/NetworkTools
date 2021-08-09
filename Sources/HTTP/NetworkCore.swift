@@ -41,6 +41,43 @@ public class Network {
     public static var customErrorHandle: ((Int, String?, Block?) -> String?)?
 
     internal static let session = URLSession(configuration: .default)
+    
+    internal static func downloadRequest(_ url: URLConvertible,
+                                         headers: Headers,
+                                         _ completion: @escaping DownloadCompletion) {
+        async {
+            guard let targetUrl = (baseURL + url).toUrl else {
+                sync { completion(nil, nil, "Incorrect url") }
+                return
+            }
+            var request = URLRequest(url: targetUrl)
+            request.allHTTPHeaderFields = headers
+            
+            session.downloadTask(with: request) { url, response, error in
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+
+                if logResponses {
+                    Log("\(statusCode) \(targetUrl)")
+                }
+
+                if let error = error?.localizedDescription, error != "null" {
+                    sync {
+                        completion(nil, nil, error)
+                    }
+                    return
+                }
+
+                guard let data = response else {
+                    sync {
+                        completion(nil, nil, "No Data in response")
+                    }
+                    return
+                }
+                sync { completion(url, data, nil) }
+
+            }.resume()
+        }
+    }
 
     internal static func coreRequest(_ url: URLConvertible,
                                      method: HTTPMethod,
