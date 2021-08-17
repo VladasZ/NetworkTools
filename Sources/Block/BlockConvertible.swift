@@ -30,6 +30,8 @@ public extension BlockConvertible {
     }
     
     var toString: String { block.JSONString }
+
+    var toJsonString: String { block.escapedJSONString }
     
     var toData: Data?                         { block.toData       }
     var toDictionary: [String : AnyHashable]? { block.toDictionary }

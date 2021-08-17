@@ -35,6 +35,23 @@ public class Block {
         return toJSON(value)
     }
     
+    public var escapedJSONString: String {
+        guard let value = value else { return "No value" }
+        if var dict = toDictionary {
+            for (k,v) in dict {
+                if v is String {
+                    let str = (v as! String).replacingOccurrences(of:"\"", with:"\\\"")
+                    dict[k] = str
+                } else {
+                    dict[k] = v
+                }
+            }
+            guard let data = try? JSONSerialization.data(withJSONObject: value, options: [.sortedKeys]) else { return "No JSON data" }
+            return data.JSONString
+        }
+        return "Could not convert block to dictionary"
+    }
+    
     public var toArray: [Block]? {
         guard let array = value as? [Any] else { return nil }
         return array.map { Block(value: $0) }
@@ -172,7 +189,6 @@ public class Block {
     }
     
     public func append<T: BlockSupportedType>(_ key: String, _ value: T?, appendsNil: Bool = false) {
-        
         guard var dictionary = toDictionary else { LogError(); return }
         
         if appendsNil {

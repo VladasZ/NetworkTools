@@ -130,7 +130,7 @@ public class Network {
                     targetUrl = urlWithParams
                 }
                 else {
-                    body = Data(params.toString.utf8)
+                    body = Data(params.toJsonString.utf8)
                 }
             }
 
