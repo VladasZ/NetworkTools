@@ -9,7 +9,7 @@
 import Foundation
 
 
-public protocol BlockConvertible : class, Parameters {
+public protocol BlockConvertible : AnyObject, Parameters {
     
     init(data: Data?) throws
     init(block: Block) throws
