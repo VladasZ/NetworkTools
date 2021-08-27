@@ -26,7 +26,7 @@ public class CacheParams {
 
     var shoudeGetFromCache: Bool {
         if Network.cacheDisabled { return false }
-        return Connection.notOk
+        return Connection.shared.notOk
     }
 
     public static let enabled  = CacheParams()
