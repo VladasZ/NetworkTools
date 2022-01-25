@@ -13,10 +13,12 @@ public class CacheParams {
     
     let enabled: Bool
     let maxAge: Double
+    let forceGetFromCache: Bool
     
-    init(enabled: Bool = true, maxAge: Double = 15) {
+    init(enabled: Bool = true, maxAge: Double = 15, forceGetFromCache: Bool = false) {
         self.enabled = enabled
         self.maxAge  = maxAge
+        self.forceGetFromCache = forceGetFromCache
     }
 
     var shouldCache: Bool {
@@ -26,7 +28,7 @@ public class CacheParams {
 
     var shoudeGetFromCache: Bool {
         if Network.cacheDisabled { return false }
-        return Connection.shared.notOk
+        return Connection.shared.notOk || forceGetFromCache
     }
 
     public static let enabled  = CacheParams()
